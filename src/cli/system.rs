@@ -155,7 +155,7 @@ impl System for BSystem {
         let mut env: HashMap<String, String> = HashMap::new();
 
         /*
-         * When we bootstrap bakery into docker we should make sure that we pull
+         * When we bootstrap yaab into docker we should make sure that we pull
          * in the entire env from the parent
          */
         for (k, v) in env_vars {
@@ -181,7 +181,7 @@ mod tests {
     #[test]
     fn test_system_init_env_file() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let build_dir: PathBuf = work_dir.clone().join("build");
         let test_file_path: PathBuf = work_dir.clone().join("init_env");
@@ -222,7 +222,7 @@ mod tests {
     #[test]
     fn test_system_init_env_file_error() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let build_dir: PathBuf = work_dir.clone().join("build");
         let test_file_path: PathBuf = work_dir.clone().join("init_env");
@@ -246,7 +246,7 @@ mod tests {
     #[test]
     fn test_system_init_env_file_missing() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let build_dir: PathBuf = work_dir.clone().join("build");
         let test_file_path: PathBuf = work_dir.clone().join("init_env");
@@ -291,7 +291,7 @@ mod tests {
     #[test]
     fn test_system_check_call() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let system: BSystem = BSystem::new();
         let mut env: HashMap<String, String> = HashMap::new();

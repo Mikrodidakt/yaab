@@ -110,7 +110,7 @@ impl Docker {
             String::from("-v"),
             format!("{}/.docker:{}/.docker", self.env_home(), self.env_home()),
             String::from("-v"),
-            format!("{}/.bakery:{}/.bakery", self.env_home(), self.env_home()),
+            format!("{}/.yaab:{}/.yaab", self.env_home(), self.env_home()),
         ]
     }
 
@@ -199,7 +199,7 @@ impl Docker {
         volumes: &Vec<String>,
     ) -> Vec<String> {
         let mut docker_cmd: Vec<String> = vec!["docker".to_string(), "run".to_string()];
-        docker_cmd.append(&mut self.container_name("bakery-workspace"));
+        docker_cmd.append(&mut self.container_name("yaab-workspace"));
         docker_cmd.append(&mut vec!["-t".to_string(), "--rm".to_string()]);
         if self._interactive {
             docker_cmd.push("-i".to_string());
@@ -244,7 +244,7 @@ impl Docker {
         temp_dir: &Path,
         env: &HashMap<String, String>,
     ) -> Result<PathBuf, BError> {
-        let env_file_path: PathBuf = PathBuf::from(temp_dir).join("bakery-docker.env");
+        let env_file_path: PathBuf = PathBuf::from(temp_dir).join("yaab-docker.env");
         let mut env_file: File = File::create(env_file_path.clone())?;
 
         for (key, value) in env.iter() {
@@ -264,7 +264,7 @@ impl Docker {
         Ok(())
     }
 
-    pub fn bootstrap_bakery(
+    pub fn bootstrap_yaab(
         &self,
         cmd_line: &Vec<String>,
         cli: &Cli,
@@ -289,7 +289,7 @@ impl Docker {
         exec_dir: &PathBuf,
         cli: &Cli,
     ) -> Result<(), BError> {
-        let temp_dir: TempDir = TempDir::new("bakery")?;
+        let temp_dir: TempDir = TempDir::new("yaab")?;
         let env_file_path: PathBuf = self.setup_env_file(temp_dir.path(), env)?;
         cli.check_call(
             &self.cmd_line(cmd_line, &env_file_path, exec_dir),
@@ -341,7 +341,7 @@ mod tests {
     #[test]
     fn test_docker_bootstrap_cmdline() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let docker_top_dir: PathBuf = work_dir.clone();
         let test_build_dir: PathBuf = work_dir.join(PathBuf::from("test_build_dir"));
@@ -379,7 +379,7 @@ mod tests {
     #[test]
     fn test_docker_bootstrap_cmdline_interactive() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let docker_top_dir: PathBuf = work_dir.clone();
         let test_build_dir: PathBuf = work_dir.join(PathBuf::from("test_build_dir"));
@@ -417,7 +417,7 @@ mod tests {
     #[test]
     fn test_docker_bootstrap_args() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let docker_top_dir: PathBuf = work_dir.clone();
         let test_build_dir: PathBuf = work_dir.join(PathBuf::from("test_build_dir"));
@@ -455,7 +455,7 @@ mod tests {
     #[test]
     fn test_docker_bootstrap_volumes() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let docker_top_dir: PathBuf = work_dir.clone();
         let test_build_dir: PathBuf = work_dir.join(PathBuf::from("test_build_dir"));
@@ -493,7 +493,7 @@ mod tests {
     #[test]
     fn test_docker_bootstrap_top_dir() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let docker_top_dir: PathBuf = work_dir.clone().join(PathBuf::from("../../"));
         let test_build_dir: PathBuf = work_dir.clone().join(PathBuf::from("test_build_dir"));
@@ -531,7 +531,7 @@ mod tests {
     #[test]
     fn test_docker_env_file() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let image: DockerImage =
             DockerImage::new("test-registry/test-image:0.1").expect("Invalid docker image format");
         let docker: Docker = Docker::new(image.clone(), true);
@@ -563,7 +563,7 @@ TEST_KEY1=TEST_VALUE1
     #[test]
     fn test_docker_cmdline() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let env_file: PathBuf = work_dir.clone().join("test-docker.env");
         let test_build_dir: PathBuf = work_dir.join(PathBuf::from("test_build_dir"));
@@ -586,7 +586,7 @@ TEST_KEY1=TEST_VALUE1
     #[test]
     fn test_docker_cmdline_interactive() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let env_file: PathBuf = work_dir.clone().join("test-docker.env");
         let test_build_dir: PathBuf = work_dir.join(PathBuf::from("test_build_dir"));

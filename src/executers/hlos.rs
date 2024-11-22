@@ -156,7 +156,7 @@ mod tests {
     #[test]
     fn test_bitbake_executer() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("builds/default");
         let bb_variables: Vec<String> = vec![];
@@ -256,8 +256,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BBBuildExecuter =
             BBBuildExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
@@ -269,7 +269,7 @@ mod tests {
     #[test]
     fn test_bitbake_executer_dry_run() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let bb_variables: Vec<String> = vec![];
         let env_variables: HashMap<String, String> = HashMap::new();
@@ -366,8 +366,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BBBuildExecuter =
             BBBuildExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
@@ -379,9 +379,9 @@ mod tests {
     /*
     #[test]
     fn test_bitbake_executer_docker() {
-        let temp_dir: TempDir = TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+        let temp_dir: TempDir = TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
-        let env_file: PathBuf = work_dir.clone().join("bakery-docker.env");
+        let env_file: PathBuf = work_dir.clone().join("yaab-docker.env");
         let build_dir: PathBuf = work_dir.join("builds/default");
         let bb_variables: Vec<String> = vec![];
         let env_variables: HashMap<String, String> = HashMap::new();
@@ -477,8 +477,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BBBuildExecuter = BBBuildExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
         executer.exec(&env_variables, false, interactive).expect("Failed to execute task");
@@ -486,7 +486,7 @@ mod tests {
 
     #[test]
     fn test_bitbake_executer_bb_docker() {
-        let temp_dir: TempDir = TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+        let temp_dir: TempDir = TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("builds/default");
         let bb_variables: Vec<String> = vec![];
@@ -567,8 +567,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BitbakeExecuter = BitbakeExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
         executer.exec(&env_variables, false, true).expect("Failed to execute task");
@@ -576,7 +576,7 @@ mod tests {
 
     #[test]
     fn test_bitbake_executer_docker_order() {
-        let temp_dir: TempDir = TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+        let temp_dir: TempDir = TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("builds/default");
         let bb_variables: Vec<String> = vec![];
@@ -658,8 +658,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BitbakeExecuter = BitbakeExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
         executer.exec(&env_variables, false, true).expect("Failed to execute task");
@@ -669,7 +669,7 @@ mod tests {
     #[test]
     fn test_bitbake_executer_env_empty() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let bb_variables: Vec<String> = vec![];
         let json_build_config: &str = r#"
@@ -714,8 +714,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BBBuildExecuter =
             BBBuildExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
@@ -734,7 +734,7 @@ mod tests {
     #[test]
     fn test_bitbake_executer_env() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let bb_variables: Vec<String> = vec![];
         let json_build_config: &str = r#"
@@ -790,8 +790,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BBBuildExecuter =
             BBBuildExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
@@ -819,7 +819,7 @@ mod tests {
     #[test]
     fn test_bitbake_executer_env_prio() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let bb_variables: Vec<String> = vec![];
         let json_build_config: &str = r#"
@@ -896,8 +896,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BBBuildExecuter =
             BBBuildExecuter::new(&cli, &task_data, data.bitbake(), &bb_variables);
@@ -926,7 +926,7 @@ mod tests {
     #[test]
     fn test_bitbake_clean_executer() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let env_variables: HashMap<String, String> = HashMap::new();
         let json_build_config: &str = r#"
@@ -999,8 +999,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: BBCleanExecuter = BBCleanExecuter::new(&cli, &task_data, data.bitbake());
         executer

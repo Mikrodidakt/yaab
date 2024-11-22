@@ -653,7 +653,7 @@ mod tests {
             }
             Err(err) => {
                 assert_eq!(
-                    "The build config version '4' is not compatible with current bakery version. \
+                    "The build config version '4' is not compatible with current yaab version. \
                     Update config to match the format of version '5'",
                     err.to_string()
                 );

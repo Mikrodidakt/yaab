@@ -48,8 +48,8 @@ impl BCommand for ShellCommand {
         let docker_pull: bool = self.get_arg_flag(cli, "docker_pull", BCOMMAND)?;
 
         /*
-         * If docker is enabled in the workspace settings then bakery will be bootstraped into a docker container
-         * with a bakery inside and all the baking will be done inside that docker container. Not all commands should
+         * If docker is enabled in the workspace settings then yaab will be bootstraped into a docker container
+         * with a yaab inside and assemble of the product will be done inside that docker container. Not all commands should
          * be run inside of docker and if we are already inside docker we should not try and bootstrap into a
          * second docker container.
          */
@@ -57,7 +57,7 @@ impl BCommand for ShellCommand {
             && self.is_docker_required()
             && !Docker::inside_docker()
         {
-            let mut cmd_line: Vec<String> = vec![String::from("bakery"), String::from("shell")];
+            let mut cmd_line: Vec<String> = vec![String::from("yaab"), String::from("shell")];
 
             if docker_pull {
                 self.docker_pull(cli, workspace)?;
@@ -66,7 +66,7 @@ impl BCommand for ShellCommand {
             /*
              * We need to rebuild the command line because if the cmd is defined
              * we need to add "" around it to make sure it is not expanded and
-             * getting mixed up with the bakery command
+             * getting mixed up with the yaab command
              */
             if !cmd.is_empty() {
                 if !config.is_empty() {
@@ -164,7 +164,7 @@ impl ShellCommand {
             clap::Arg::new("docker_pull")
                 .action(clap::ArgAction::SetTrue)
                 .long("docker-pull")
-                .help("Force the bakery shell to pull down the latest docker image from registry."),
+                .help("Force the yaab shell to pull down the latest docker image from registry."),
         )
         .arg(
             clap::Arg::new("run")
@@ -261,14 +261,14 @@ impl ShellCommand {
         let mut env: HashMap<String, String> =
             self.hlos_build_env(cli, workspace, args_env_variables)?;
         /*
-         * Set the BAKERY_CURRENT_BUILD_CONFIG and BAKERY_WORKSPACE env variable used by the aliases in
-         * /etc/bakery/bakery.bashrc which is sourced by /etc/bash.bashrc when running an interactive
+         * Set the YAAB_CURRENT_BUILD_CONFIG and YAAB_WORKSPACE env variable used by the aliases in
+         * /etc/yaab/yaab.bashrc which is sourced by /etc/bash.bashrc when running an interactive
          * bash shell. This will make it possible to run build, clean, deploy, upload aliases from any location
          * in the shell without having to specify the build config or change directory since it is selected
          * when starting the shell
          */
         env.insert(
-            String::from("BAKERY_WORKSPACE"),
+            String::from("YAAB_WORKSPACE"),
             workspace
                 .settings()
                 .work_dir()
@@ -276,7 +276,7 @@ impl ShellCommand {
                 .to_string(),
         );
         env.insert(
-            String::from("BAKERY_CURRENT_BUILD_CONFIG"),
+            String::from("YAAB_CURRENT_BUILD_CONFIG"),
             workspace.config().build_data().product().name().to_string(),
         );
 

@@ -210,7 +210,7 @@ mod tests {
     #[test]
     fn test_workspace_default() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let test_work_dir: &Path = temp_dir.path();
         Helper::setup_test_ws_default_dirs(test_work_dir);
         let ws: Workspace = Workspace::new(Some(PathBuf::from(test_work_dir)), None, None)
@@ -232,7 +232,7 @@ mod tests {
         assert_eq!(
             format!("{}", docker_image),
             format!(
-                "ghcr.io/mikrodidakt/bakery/bakery-workspace:{}",
+                "ghcr.io/mikrodidakt/yaab/yaab-workspace:{}",
                 env!("CARGO_PKG_VERSION")
             )
         );
@@ -243,7 +243,7 @@ mod tests {
     #[test]
     fn test_workspace_build_configs() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let test_work_dir: &Path = temp_dir.path();
         let mut configs: IndexMap<PathBuf, String> = IndexMap::new();
         let config1_str: &str = r#"
@@ -348,7 +348,7 @@ mod tests {
         assert_eq!(
             format!("{}", docker_image),
             format!(
-                "ghcr.io/mikrodidakt/bakery/bakery-workspace:{}",
+                "ghcr.io/mikrodidakt/yaab/yaab-workspace:{}",
                 env!("CARGO_PKG_VERSION")
             )
         );
@@ -362,7 +362,7 @@ mod tests {
     #[test]
     fn test_workspace_valid_config() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let test_work_dir: &Path = temp_dir.path();
         let mut configs: IndexMap<PathBuf, String> = IndexMap::new();
         let config_str: &str = r#"

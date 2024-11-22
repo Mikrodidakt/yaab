@@ -69,7 +69,7 @@ mod tests {
     #[test]
     fn test_manifest_collector_content() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let task_build_dir: PathBuf = work_dir.clone().join("task/dir");
         let files: Vec<PathBuf> = vec![];
@@ -125,7 +125,7 @@ mod tests {
     #[test]
     fn test_manifest_collector_context() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let task_build_dir: PathBuf = work_dir.clone().join("task/dir");
         let files: Vec<PathBuf> = vec![];

@@ -194,7 +194,7 @@ mod tests {
     #[test]
     fn test_archiver_zip() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-archiver.zip");
         let archiver: Archiver = Archiver::new(&archiver_path).expect("Failed to setup archiver!");
@@ -206,7 +206,7 @@ mod tests {
     #[test]
     fn test_archiver_version_zip() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-x.y.z-archiver.zip");
         let archiver: Archiver = Archiver::new(&archiver_path).expect("Failed to setup archiver!");
@@ -218,7 +218,7 @@ mod tests {
     #[test]
     fn test_archiver_tar_gz() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-archiver.tar.gz");
         let archiver: Archiver = Archiver::new(&archiver_path).expect("Failed to setup archiver!");
@@ -230,7 +230,7 @@ mod tests {
     #[test]
     fn test_archiver_tar_bz() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-archiver.tar.bz2");
         let archiver: Archiver = Archiver::new(&archiver_path).expect("Failed to setup archiver!");
@@ -242,7 +242,7 @@ mod tests {
     #[test]
     fn test_archiver_version_tar_bz() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-x.y.z-archiver.tar.bz2");
         let archiver: Archiver = Archiver::new(&archiver_path).expect("Failed to setup archiver!");
@@ -254,7 +254,7 @@ mod tests {
     /*
     #[test]
     fn test_archiver_tar_xz() {
-        let temp_dir: TempDir = TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+        let temp_dir: TempDir = TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-archiver.tar.xz");
         let archiver: Archiver = Archiver::new(&archiver_path).expect("Failed to setup archiver!");
@@ -267,7 +267,7 @@ mod tests {
     #[test]
     fn test_archiver_error_unsupported_archive() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-archiver.gzip");
         let error: BError = Archiver::new(&archiver_path)
@@ -281,7 +281,7 @@ mod tests {
     #[test]
     fn test_archiver_error_unsupported_compression() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-archiver.tar.invalid");
         let error: BError = Archiver::new(&archiver_path)
@@ -295,7 +295,7 @@ mod tests {
     #[test]
     fn test_archiver_error_no_compression() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let archiver_path: PathBuf = path.join("test-archiver.tar");
         let error: BError = Archiver::new(&archiver_path)
@@ -309,7 +309,7 @@ mod tests {
     #[test]
     fn test_archiver_file_tar_gz() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: &Path = temp_dir.path();
         let archiver_path: PathBuf = work_dir.join("test-archiver.tar.gz");
         let files: Vec<PathBuf> = vec![
@@ -341,7 +341,7 @@ mod tests {
     #[test]
     fn test_archiver_file_tar_bz2() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: &Path = temp_dir.path();
         let archiver_path: PathBuf = work_dir.join("test-archiver.tar.bz2");
         let files: Vec<PathBuf> = vec![
@@ -373,7 +373,7 @@ mod tests {
     #[test]
     fn test_archiver_file_zip() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: &Path = temp_dir.path();
         let archiver_path: PathBuf = work_dir.join("test-archiver.zip");
         let files: Vec<PathBuf> = vec![

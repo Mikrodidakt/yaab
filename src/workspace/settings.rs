@@ -260,7 +260,7 @@ mod tests {
         assert_eq!(
             format!("{}", docker_image),
             format!(
-                "ghcr.io/mikrodidakt/bakery/bakery-workspace:{}",
+                "ghcr.io/mikrodidakt/yaab/yaab-workspace:{}",
                 env!("CARGO_PKG_VERSION")
             )
         );

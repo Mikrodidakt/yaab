@@ -112,7 +112,7 @@ mod tests {
     #[test]
     fn test_cmd_setup() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: &PathBuf = &temp_dir.into_path();
         let json_ws_settings: &str = r#"
         {
@@ -170,8 +170,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery", "setup", "-c", "default"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab", "setup", "-c", "default"]),
         );
         let cmd: SetupCommand = SetupCommand::new();
         let _result: Result<(), BError> = cmd.execute(&cli, &mut workspace);
@@ -180,7 +180,7 @@ mod tests {
     #[test]
     fn test_cmd_setup_ctx() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: &PathBuf = &temp_dir.into_path();
         let json_ws_settings: &str = r#"
         {
@@ -238,9 +238,9 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
+            clap::Command::new("yaab"),
             Some(vec![
-                "bakery",
+                "yaab",
                 "setup",
                 "-c",
                 "default",

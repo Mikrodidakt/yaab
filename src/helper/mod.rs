@@ -330,7 +330,7 @@ impl Helper {
             String::from("docker"),
             String::from("run"),
             String::from("--name"),
-            format!("bakery-workspace-{}", std::process::id()),
+            format!("yaab-workspace-{}", std::process::id()),
             String::from("-t"),
             String::from("--rm"),
         ];
@@ -368,7 +368,7 @@ impl Helper {
             ),
             String::from("-v"),
             format!(
-                "{}/.bakery:{}/.bakery",
+                "{}/.yaab:{}/.yaab",
                 Helper::env_home(),
                 Helper::env_home()
             ),

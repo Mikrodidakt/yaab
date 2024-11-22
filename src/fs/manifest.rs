@@ -91,7 +91,7 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let manifest_path: PathBuf = path.join("test-manifest.json");
         let manifest: Manifest = Manifest::new(&manifest_path).expect("Failed to setup manifest!");
@@ -115,7 +115,7 @@ mod tests {
     #[test]
     fn test_manifest_extension_error() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let manifest_path: PathBuf = path.join("test-manifest.txt");
         let result: Result<Manifest, BError> = Manifest::new(&manifest_path);

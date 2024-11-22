@@ -4,14 +4,14 @@ Bakery is developed using Rust. To build the source code and utilize it instead 
 
 # Build
 
-If you are not running a Debian distribution then bakery can be built from source
+If you are not running a Debian distribution then yaab can be built from source
 by setting up rust. Follow these steps:
 
 1. Clone the Bakery repository:
 
     ```bash
-    git clone git@github.com:Mikrodidakt/bakery.git
-    cd bakery
+    git clone git@github.com:Mikrodidakt/yaab.git
+    cd yaab
     ```
 
 2. Run the setup script to install Rust devtools:

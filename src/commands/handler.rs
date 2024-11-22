@@ -25,7 +25,7 @@ impl CmdHandler {
     pub fn build_cli(&self, mut cli: clap::Command) -> clap::Command {
         for (_, value) in self.cmds.iter() {
             /*
-                We clone the clap::Command owned by the bakery Command.
+                We clone the clap::Command owned by the yaab Command.
                 And then we transfer the ownership to cli and once all
                 subcommands have been added to the cli we return it.
             */

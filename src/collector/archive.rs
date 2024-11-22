@@ -16,7 +16,7 @@ impl<'a> Collector for ArchiveCollector<'a> {
     fn collect(&self, src: &PathBuf, dest: &PathBuf) -> Result<Vec<Collected>, BError> {
         let archive_name: &str = self.artifact.data().name();
         let archive_path: PathBuf = dest.join(PathBuf::from(archive_name));
-        let temp_dir: TempDir = TempDir::new("bakery-archiver")?;
+        let temp_dir: TempDir = TempDir::new("yaab-archiver")?;
         let archive_tmp_dir: PathBuf = PathBuf::from(temp_dir.path());
         let mut collected: Vec<Collected> = vec![];
 
@@ -78,7 +78,7 @@ mod tests {
     fn test_archive_collector_files() {
         let archive_name: &str = "archive.zip";
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let task_build_dir: PathBuf = work_dir.clone().join("task/dir");
         let files: Vec<PathBuf> = vec![
@@ -129,7 +129,7 @@ mod tests {
     fn test_archive_collector_nested() {
         let archive_name: &str = "archive.zip";
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let task_build_dir: PathBuf = work_dir.clone().join("task/dir");
         let files: Vec<PathBuf> = vec![

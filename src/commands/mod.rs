@@ -56,12 +56,12 @@ pub trait BCommand {
         let docker: Docker = Docker::new(workspace.settings().docker_image(), interactive);
 
         /*
-         * When we bootstrap bakery into docker we should make sure that we pull
+         * When we bootstrap yaab into docker we should make sure that we pull
          * in the entire env from the parent
          */
         let env: HashMap<String, String> = cli.env();
 
-        cli.info(format!("Bootstrap bakery into '{}'", docker.image()));
+        cli.info(format!("Bootstrap yaab into '{}'", docker.image()));
 
         if !PathBuf::from("/usr/bin/docker").exists() {
             return Err(BError::DockerError());
@@ -79,7 +79,7 @@ pub trait BCommand {
          */
         // docker.pull(cli)?;
 
-        return docker.bootstrap_bakery(
+        return docker.bootstrap_yaab(
             cmd_line,
             cli,
             &workspace.settings().docker_top_dir(),
@@ -138,7 +138,7 @@ pub trait BCommand {
     }
 
     // Return a clap sub-command containing the args
-    // for the bakery command
+    // for the yaab command
     fn subcommand(&self) -> &clap::Command;
 
     fn cmd_str(&self) -> &str;

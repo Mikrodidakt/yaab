@@ -11,24 +11,24 @@ const WORKSPACE_SETTINGS: &str = "workspace.json";
 
 pub struct WsConfigFileHandler {
     work_dir: PathBuf,
-    bakery_dir: PathBuf,
+    yaab_dir: PathBuf,
 }
 
 impl WsConfigFileHandler {
     pub fn new(work_dir: &PathBuf, home_dir: &PathBuf) -> Self {
-        let bakery_dir: PathBuf = home_dir.clone().join(".bakery");
+        let yaab_dir: PathBuf = home_dir.clone().join(".yaab");
         WsConfigFileHandler {
             work_dir: work_dir.clone(),
-            bakery_dir,
+            yaab_dir,
         }
     }
 
     pub fn ws_settings(&self) -> Result<WsSettingsHandler, BError> {
-        let mut path: PathBuf = self.bakery_dir.clone().join(WORKSPACE_SETTINGS);
+        let mut path: PathBuf = self.yaab_dir.clone().join(WORKSPACE_SETTINGS);
 
         /*
-         * The workspace settings file workspace.json can be placed under ${HOME}/.bakery/workspace.json
-         * if available that file will be used for any workspace that is used by the bakery. This can be
+         * The workspace settings file workspace.json can be placed under ${HOME}/.yaab/workspace.json
+         * if available that file will be used for any workspace that is used by the yaab. This can be
          * use if for some reason a baker would like to overwrite the workspace settings that are defined
          * in the repo for the product that is going to be baked.
          */
@@ -38,7 +38,7 @@ impl WsConfigFileHandler {
         }
 
         /*
-         * The default location for the workspace settings is the current directory from where bakery is executed
+         * The default location for the workspace settings is the current directory from where yaab is executed
          * normally this file is part of the repo that have been cloned containing the meta data to build the product
          */
         path = self.work_dir.clone().join(WORKSPACE_SETTINGS);
@@ -180,7 +180,7 @@ mod tests {
     #[test]
     fn test_cfg_handler_settings_default() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path()).join("workspace");
         let home_dir: PathBuf = PathBuf::from(temp_dir.path()).join("home");
         Helper::setup_test_ws_default_dirs(&work_dir);
@@ -201,13 +201,13 @@ mod tests {
     }
 
     /*
-     * Test that the workspace settings file in the home bakery config dir is used instead
+     * Test that the workspace settings file in the home yaab config dir is used instead
      * of the one in the root of the workspace/work dir
      */
     #[test]
     fn test_cfg_handler_settings_home_dir() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path()).join("workspace");
         let home_dir: PathBuf = PathBuf::from(temp_dir.path()).join("home");
         Helper::setup_test_ws_default_dirs(&work_dir);
@@ -227,7 +227,7 @@ mod tests {
             }
         }"#;
         write_json_conf(
-            &home_dir.clone().join(".bakery/workspace.json"),
+            &home_dir.clone().join(".yaab/workspace.json"),
             ws_settings_2,
         );
         let cfg_handler: WsConfigFileHandler = WsConfigFileHandler::new(&work_dir, &home_dir);
@@ -243,7 +243,7 @@ mod tests {
     #[test]
     fn test_cfg_handler_settings_work_dir() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path()).join("workspace");
         let home_dir: PathBuf = PathBuf::from(temp_dir.path()).join("home");
         Helper::setup_test_ws_default_dirs(&work_dir);
@@ -268,7 +268,7 @@ mod tests {
     #[test]
     fn test_cfg_handler_build_config() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path()).join("workspace");
         let home_dir: PathBuf = PathBuf::from(temp_dir.path()).join("home");
         Helper::setup_test_ws_default_dirs(&work_dir);
@@ -297,7 +297,7 @@ mod tests {
     #[test]
     fn test_cfg_handler_ws_root_build_config() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path()).join("workspace");
         let home_dir: PathBuf = PathBuf::from(temp_dir.path()).join("home");
         let cfg_handler: WsConfigFileHandler = WsConfigFileHandler::new(&work_dir, &home_dir);
@@ -339,7 +339,7 @@ mod tests {
     #[test]
     fn test_cfg_handler_ws_configs_build_config() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path()).join("workspace");
         let home_dir: PathBuf = PathBuf::from(temp_dir.path()).join("home");
         let cfg_handler: WsConfigFileHandler = WsConfigFileHandler::new(&work_dir, &home_dir);
@@ -367,7 +367,7 @@ mod tests {
     #[test]
     fn test_cfg_handler_ws_include_configs() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path()).join("workspace");
         let home_dir: PathBuf = PathBuf::from(temp_dir.path()).join("home");
         let cfg_handler: WsConfigFileHandler = WsConfigFileHandler::new(&work_dir, &home_dir);

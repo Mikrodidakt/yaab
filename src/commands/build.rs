@@ -70,8 +70,8 @@ impl BCommand for BuildCommand {
         }
 
         /*
-         * If docker is enabled in the workspace settings then bakery will be boottraped into a docker container
-         * with a bakery inside and all the baking will be done inside that docker container. Not all commands should
+         * If docker is enabled in the workspace settings then yaab will be boottraped into a docker container
+         * with a yaab inside and all the baking will be done inside that docker container. Not all commands should
          * be run inside of docker and if we are already inside docker we should not try and bootstrap into a
          * second docker container.
          */
@@ -333,7 +333,7 @@ mod tests {
             WsBuildConfigHandler::from_str(json_build_config, &settings)?;
         let mut workspace: Workspace =
             Workspace::new(Some(work_dir.to_owned()), Some(settings), Some(config))?;
-        let cli: Cli = Cli::new(logger, system, clap::Command::new("bakery"), Some(cmd_line));
+        let cli: Cli = Cli::new(logger, system, clap::Command::new("yaab"), Some(cmd_line));
         let cmd: BuildCommand = BuildCommand::new();
         cmd.execute(&cli, &mut workspace)
     }
@@ -370,7 +370,7 @@ mod tests {
         bb_variables: Option<&str>,
     ) {
         let mut cmd_line: Vec<&str> = vec![
-            "bakery",
+            "yaab",
             "build",
             "--config",
             "default",
@@ -422,7 +422,7 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("builds/default");
         let local_conf_path: PathBuf = build_dir.clone().join("conf/local.conf");
@@ -504,7 +504,7 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
+            clap::Command::new("yaab"),
             Some(cmd_line),
         );
         let cmd: BuildCommand = BuildCommand::new();
@@ -576,7 +576,7 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("builds/default");
         let mut mocked_system: MockSystem = MockSystem::new();
@@ -613,7 +613,7 @@ mod tests {
             &work_dir,
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            vec!["bakery", "build", "--config", "default"],
+            vec!["yaab", "build", "--config", "default"],
         );
     }
 
@@ -651,7 +651,7 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("test-dir");
         let mut mocked_system: MockSystem = MockSystem::new();
@@ -682,7 +682,7 @@ mod tests {
             &work_dir,
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            vec!["bakery", "build", "--config", "default"],
+            vec!["yaab", "build", "--config", "default"],
         );
     }
 
@@ -716,11 +716,11 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let mut mocked_system: MockSystem = MockSystem::new();
         let docker_image: DockerImage = DockerImage::new(&format!(
-            "ghcr.io/mikrodidakt/bakery/bakery-workspace:{}",
+            "ghcr.io/mikrodidakt/yaab/yaab-workspace:{}",
             env!("CARGO_PKG_VERSION")
         ))
         .expect("Invalid docker image format");
@@ -735,7 +735,7 @@ mod tests {
                     &work_dir,
                     &docker_image,
                     &vec![
-                        String::from("bakery"),
+                        String::from("yaab"),
                         String::from("build"),
                         String::from("--config"),
                         String::from("default"),
@@ -756,7 +756,7 @@ mod tests {
             &work_dir,
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            vec!["bakery", "build", "--config", "default"],
+            vec!["yaab", "build", "--config", "default"],
         );
     }
 
@@ -790,10 +790,10 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let docker_image: DockerImage = DockerImage::new(&format!(
-            "ghcr.io/mikrodidakt/bakery/bakery-workspace:{}",
+            "ghcr.io/mikrodidakt/yaab/yaab-workspace:{}",
             env!("CARGO_PKG_VERSION")
         ))
         .expect("Invalid docker image format");
@@ -809,7 +809,7 @@ mod tests {
                     &work_dir,
                     &docker_image,
                     &vec![
-                        String::from("bakery"),
+                        String::from("yaab"),
                         String::from("build"),
                         String::from("--config"),
                         String::from("default"),
@@ -833,7 +833,7 @@ mod tests {
             Box::new(BLogger::new()),
             Box::new(mocked_system),
             vec![
-                "bakery",
+                "yaab",
                 "build",
                 "--config",
                 "default",
@@ -873,10 +873,10 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let docker_image: DockerImage = DockerImage::new(&format!(
-            "ghcr.io/mikrodidakt/bakery/bakery-workspace:{}",
+            "ghcr.io/mikrodidakt/yaab/yaab-workspace:{}",
             env!("CARGO_PKG_VERSION")
         ))
         .expect("Invalid docker image format");
@@ -892,7 +892,7 @@ mod tests {
                     &work_dir,
                     &docker_image,
                     &vec![
-                        String::from("bakery"),
+                        String::from("yaab"),
                         String::from("build"),
                         String::from("--config"),
                         String::from("default"),
@@ -915,7 +915,7 @@ mod tests {
             Box::new(BLogger::new()),
             Box::new(mocked_system),
             vec![
-                "bakery",
+                "yaab",
                 "build",
                 "--config",
                 "default",
@@ -959,10 +959,10 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let docker_image: DockerImage = DockerImage::new(&format!(
-            "ghcr.io/mikrodidakt/bakery/bakery-workspace:{}",
+            "ghcr.io/mikrodidakt/yaab/yaab-workspace:{}",
             env!("CARGO_PKG_VERSION")
         ))
         .expect("Invalid docker image format");
@@ -978,7 +978,7 @@ mod tests {
                     &work_dir,
                     &docker_image,
                     &vec![
-                        String::from("bakery"),
+                        String::from("yaab"),
                         String::from("build"),
                         String::from("--config"),
                         String::from("default"),
@@ -999,7 +999,7 @@ mod tests {
             &work_dir,
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            vec!["bakery", "build", "--config", "default"],
+            vec!["yaab", "build", "--config", "default"],
         );
     }
 
@@ -1037,7 +1037,7 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("builds/default");
         let mut mocked_system: MockSystem = MockSystem::new();
@@ -1075,7 +1075,7 @@ mod tests {
             Box::new(BLogger::new()),
             Box::new(mocked_system),
             vec![
-                "bakery",
+                "yaab",
                 "build",
                 "--config",
                 "default",
@@ -1132,7 +1132,7 @@ mod tests {
         }
         "#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("builds/default");
         let mut mocked_system: MockSystem = MockSystem::new();
@@ -1196,7 +1196,7 @@ mod tests {
             Box::new(BLogger::new()),
             Box::new(mocked_system),
             vec![
-                "bakery",
+                "yaab",
                 "build",
                 "--config",
                 "default",
@@ -1307,7 +1307,7 @@ mod tests {
             }
         }"#;
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("build/dir3/dir2");
         let mut mocked_system: MockSystem = MockSystem::new();
@@ -1340,7 +1340,7 @@ mod tests {
             Box::new(BLogger::new()),
             Box::new(mocked_system),
             vec![
-                "bakery",
+                "yaab",
                 "build",
                 "--config",
                 "default",
@@ -1386,7 +1386,7 @@ mod tests {
                 }
             }
         }"#;
-        let temp_dir: TempDir = TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+        let temp_dir: TempDir = TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("build/");
         let mut mocked_system: MockSystem = MockSystem::new();
@@ -1408,7 +1408,7 @@ mod tests {
             &work_dir,
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            vec!["bakery", "build", "--config", "default", "--tasks", "task-name", "--env", "ENV_VAR1=CLI_VALUE1"],
+            vec!["yaab", "build", "--config", "default", "--tasks", "task-name", "--env", "ENV_VAR1=CLI_VALUE1"],
         );
     }
     */

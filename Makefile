@@ -3,7 +3,7 @@
 help:
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
-## build              - Build bakery using cargo
+## build              - Build yaab using cargo
 .PHONY: build
 build:
 	cargo build
@@ -23,15 +23,15 @@ format:
 test:
 	cargo test
 
-## install            - Install bakery under $HOME/.cargo using cargo
+## install            - Install yaab under $HOME/.cargo using cargo
 .PHONY: install
 install:
 	cargo install --path .
 
-## install-deb        - Install latest locally built bakery under /usr/bin using deb package
+## install-deb        - Install latest locally built yaab under /usr/bin using deb package
 .PHONY: install-deb
 install-deb:
-	sudo dpkg -i artifacts/bakery.deb
+	sudo dpkg -i artifacts/yaab.deb
 
 ## deb-package        - Create a debian package from the latest release build
 .PHONY: deb-package
@@ -53,12 +53,12 @@ setup-rust:
 setup-docker:
 	./scripts/setup-docker.sh
 
-## docker-build       - Build a bakery workspace docker image
+## docker-build       - Build a yaab workspace docker image
 .PHONY: docker-build
 docker-build:
 	(./docker/do_docker_build.sh)
 
-## docker-shell       - Open a bakery workspace docker shell
+## docker-shell       - Open a yaab workspace docker shell
 docker-shell:
 	(./docker/do_docker_shell.sh)
 

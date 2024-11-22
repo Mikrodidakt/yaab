@@ -505,7 +505,7 @@ mod tests {
     #[test]
     fn test_ws_task_run_bitbake() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let work_dir: PathBuf = PathBuf::from(path);
         let json_task_str: &str = r#"
@@ -551,7 +551,7 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
+            clap::Command::new("yaab"),
             None,
         );
         task.build(
@@ -571,7 +571,7 @@ mod tests {
     #[test]
     fn test_ws_task_run_docker() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let work_dir: PathBuf = PathBuf::from(path);
         let json_task_str: &str = r#"
@@ -605,7 +605,7 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
+            clap::Command::new("yaab"),
             None,
         );
         task.run(&cli, &build_data, &vec![], &HashMap::new(), false, false).expect("Failed to run task!");
@@ -615,7 +615,7 @@ mod tests {
     #[test]
     fn test_ws_task_run_recipes() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let work_dir: PathBuf = PathBuf::from(path);
         let json_task_str: &str = r#"
@@ -687,7 +687,7 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
+            clap::Command::new("yaab"),
             None,
         );
         task.build(
@@ -705,7 +705,7 @@ mod tests {
     #[test]
     fn test_ws_task_bitbake_confs() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let path: &Path = temp_dir.path();
         let work_dir: PathBuf = PathBuf::from(path);
         let build_dir: PathBuf = work_dir.join("builds/default");
@@ -837,7 +837,7 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
+            clap::Command::new("yaab"),
             None,
         );
         task.build(

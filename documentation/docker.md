@@ -1,10 +1,10 @@
 # Introduction
 
-By default, Bakery utilizes Docker and relies on the bakery-workspace image. Presently, Bakery has minimal requirements, only necessitating the availability of Docker on the system and that the user invoking Bakery is a member of the docker group. It's important to note that Bakery should never run as root. If you encounter permission issues when running Bakery with Docker, it's likely that the user is not part of the docker group.
+By default, Bakery utilizes Docker and relies on the yaab-workspace image. Presently, Bakery has minimal requirements, only necessitating the availability of Docker on the system and that the user invoking Bakery is a member of the docker group. It's important to note that Bakery should never run as root. If you encounter permission issues when running Bakery with Docker, it's likely that the user is not part of the docker group.
 
 # Setup Docker
 
-There are multiple ways to install docker on your system and bakery has currently no preference. For reference on how to setup docker please see [setup-docker.sh](https://github.com/Mikrodidakt/bakery/blob/main/scripts/setup-docker.sh). This script currently supports setting up Docker on ubuntu and debian it is based on [Install Docker](https://docs.docker.com/engine/install/).
+There are multiple ways to install docker on your system and yaab has currently no preference. For reference on how to setup docker please see [setup-docker.sh](https://github.com/Mikrodidakt/yaab/blob/main/scripts/setup-docker.sh). This script currently supports setting up Docker on ubuntu and debian it is based on [Install Docker](https://docs.docker.com/engine/install/).
 
 ## Docker Group
 
@@ -18,23 +18,23 @@ user adm cdrom sudo dip plugdev docker
 
 # Bakery Workspace Image
 
-The bakery workspace image can be pulled from Github Container Registry by running
+The yaab workspace image can be pulled from Github Container Registry by running
 
 ```bash
-user@node:/dir$ BAKERY_VERSION=$(bakery --version)
-user@node:/dir$ BAKERY_VERSION=${BAKERY_VERSION##* }
-user@node:/dir$ docker pull ghcr.io/mikrodidakt/bakery/bakery-workspace:${BAKERY_VERSION}
+user@node:/dir$ YAAB_VERSION=$(yaab --version)
+user@node:/dir$ YAAB_VERSION=${YAAB_VERSION##* }
+user@node:/dir$ docker pull ghcr.io/mikrodidakt/yaab/yaab-workspace:${YAAB_VERSION}
 ```
 
-Opening a shell to the bakery-workspace can be done by running
+Opening a shell to the yaab-workspace can be done by running
 
 ```bash
-user@node:/dir$ docker run -it ghcr.io/mikrodidakt/bakery/bakery-workspace:${BAKERY_VERSION} /bin/bash
+user@node:/dir$ docker run -it ghcr.io/mikrodidakt/yaab/yaab-workspace:${YAAB_VERSION} /bin/bash
 ```
 
 ## Custom Worksapce Image
 
-If the default bakery workspace image is not enough a custome image can easily be setup. To get bakery to use the custom image change the values in the workspace config file
+If the default yaab workspace image is not enough a custome image can easily be setup. To get yaab to use the custom image change the values in the workspace config file
 
 ```json
         "docker": {
@@ -46,22 +46,22 @@ If the default bakery workspace image is not enough a custome image can easily b
         }
 ```
 
-When creating the custom bakery workspace make sure to include the following
+When creating the custom yaab workspace make sure to include the following
 
 ```bash
-RUN wget https://github.com/Mikrodidakt/bakery/releases/download/v${BAKERY_VERSION}/bakery-v${BAKERY_VERSION}.deb
-RUN sudo dpkg -i bakery-v${BAKERY_VERSION}.deb
+RUN wget https://github.com/Mikrodidakt/yaab/releases/download/v${YAAB_VERSION}/yaab-v${YAAB_VERSION}.deb
+RUN sudo dpkg -i yaab-v${YAAB_VERSION}.deb
 
-# Setting up a bakery specific bash env pulled in by /etc/bash.bashrc 
-RUN mkdir -p /etc/bakery && \
-     echo "source /etc/bakery/bakery.bashrc" >> /etc/bash.bashrc
+# Setting up a yaab specific bash env pulled in by /etc/bash.bashrc 
+RUN mkdir -p /etc/yaab && \
+     echo "source /etc/yaab/yaab.bashrc" >> /etc/bash.bashrc
 ```
 
-if the bakery workflow to use the bakery aliases in the [bakery shell](sub-commands.md) is desired.
+if the yaab workflow to use the yaab aliases in the [yaab shell](sub-commands.md) is desired.
 
-## Bootstrap Bakery
+## Bootstrap Yaab
 
-When starting bakery the first step is that bakery will bootstrap its self into the bakery-workspace image. In the default bakery-workspace image bakery is installed but sometimes it is not desired to use the version inside the container. This can be accomplished by adding the following to the workspace config file
+When starting yaab the first step is that yaab will bootstrap its self into the yaab-workspace image. In the default yaab-workspace image yaab is installed but sometimes it is not desired to use the version inside the container. This can be accomplished by adding the following to the workspace config file
 
 ```json
         "docker": {
@@ -69,12 +69,12 @@ When starting bakery the first step is that bakery will bootstrap its self into 
                 "image": "custom-workspace",
                 "tag": "x.y.z",
                 "args": [
-                    "-v /usr/bin/bakery:/usr/bin/bakery:ro"
+                    "-v /usr/bin/yaab:/usr/bin/yaab:ro"
                 ]
         }
 ```
 
-This will make sure that the external bakery version is used instead of the internal version.
+This will make sure that the external yaab version is used instead of the internal version.
 
 # Crops
 

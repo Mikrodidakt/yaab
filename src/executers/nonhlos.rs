@@ -122,7 +122,7 @@ mod tests {
     #[test]
     fn test_nonbitbake_executer() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("test-dir");
         let env_variables: HashMap<String, String> = HashMap::new();
@@ -166,8 +166,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: NonBBBuildExecuter = NonBBBuildExecuter::new(&cli, &task_data);
         executer
@@ -178,7 +178,7 @@ mod tests {
     #[test]
     fn test_nonbitbake_executer_dry_run() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let env_variables: HashMap<String, String> = HashMap::new();
         let json_build_config: &str = r#"
@@ -211,8 +211,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(mocked_logger),
             Box::new(BSystem::new()),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: NonBBBuildExecuter = NonBBBuildExecuter::new(&cli, &task_data);
         executer
@@ -223,7 +223,7 @@ mod tests {
     /*
     #[test]
     fn test_bitbake_executer_docker() {
-        let temp_dir: TempDir = TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+        let temp_dir: TempDir = TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("test-dir");
         let env_variables: HashMap<String, String> = HashMap::new();
@@ -262,8 +262,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: NonBitbakeExecuter = NonBitbakeExecuter::new(&cli, &task_data);
         executer.exec(&env_variables, false, true).expect("Failed to execute task");
@@ -273,7 +273,7 @@ mod tests {
     #[test]
     fn test_nonbitbake_clean_executer() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let build_dir: PathBuf = work_dir.join("test-dir");
         let env_variables: HashMap<String, String> = HashMap::new();
@@ -319,8 +319,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: NonBBCleanExecuter = NonBBCleanExecuter::new(&cli, &task_data);
         executer

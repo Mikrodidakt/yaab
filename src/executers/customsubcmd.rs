@@ -71,8 +71,8 @@ mod tests {
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
-            clap::Command::new("bakery"),
-            Some(vec!["bakery"]),
+            clap::Command::new("yaab"),
+            Some(vec!["yaab"]),
         );
         let executer: CustomSubCmdExecuter = CustomSubCmdExecuter::new(&cli, &data);
         executer

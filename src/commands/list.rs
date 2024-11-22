@@ -312,7 +312,7 @@ mod tests {
     #[test]
     fn test_cmd_list_ctx() {
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
         let json_ws_settings: &str = r#"
         {
@@ -389,7 +389,7 @@ mod tests {
             json_build_config,
             mocked_logger,
             MockSystem::new(),
-            vec!["bakery", "list", "--config", "default", "--ctx"],
+            vec!["yaab", "list", "--config", "default", "--ctx"],
         );
     }
 */

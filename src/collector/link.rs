@@ -85,7 +85,7 @@ mod tests {
     fn test_link_collector_source() {
         let src_file_name: &str = "file.txt";
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let task_build_dir: PathBuf = work_dir.clone().join("task/dir");
         let files: Vec<PathBuf> = vec![task_build_dir.clone().join(src_file_name)];
@@ -128,7 +128,7 @@ mod tests {
         let src_file_name: &str = "src/dir1/dir2/src-file.txt";
         let link_file_name: &str = "link-ctx1-ctx2.txt";
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let task_build_dir: PathBuf = work_dir.clone().join("task/dir");
         let files: Vec<PathBuf> = vec![task_build_dir.clone().join(src_file_name)];
@@ -181,7 +181,7 @@ mod tests {
     fn test_link_collector_no_source() {
         let src_file_name: &str = "file.txt";
         let temp_dir: TempDir =
-            TempDir::new("bakery-test-dir").expect("Failed to create temp directory");
+            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = PathBuf::from(temp_dir.path());
         let task_build_dir: PathBuf = work_dir.clone().join("task/dir");
         /*
