@@ -5,10 +5,10 @@ use serde_json::Value;
 // Not the ideal solution we should see if it is possible to
 // read them from the Cargo.toml and then incorporate them
 // into the binary
-pub const _BAKERY_DOCKER_ARGS: [&str; 2] = ["--rm=true", "-t"];
-pub const BAKERY_DOCKER_IMAGE: &str = "mikrodidakt/yaab/yaab-workspace";
-pub const BAKERY_DOCKER_TAG: &str = env!("CARGO_PKG_VERSION");
-pub const BAKERY_DOCKER_REGISTRY: &str = "ghcr.io";
+pub const _YAAB_DOCKER_ARGS: [&str; 2] = ["--rm=true", "-t"];
+pub const YAAB_DOCKER_IMAGE: &str = "mikrodidakt/yaab/yaab-workspace";
+pub const YAAB_DOCKER_TAG: &str = env!("CARGO_PKG_VERSION");
+pub const YAAB_DOCKER_REGISTRY: &str = "ghcr.io";
 
 #[derive(Clone)]
 pub struct WsSettings {
@@ -45,9 +45,9 @@ impl WsSettings {
         let mut docker_dir: String = String::from("docker");
         let mut cache_dir: String = String::from(".cache");
         let supported: Vec<String>;
-        let mut docker_image: String = String::from(BAKERY_DOCKER_IMAGE);
-        let mut docker_tag: String = String::from(BAKERY_DOCKER_TAG);
-        let mut docker_registry: String = String::from(BAKERY_DOCKER_REGISTRY);
+        let mut docker_image: String = String::from(YAAB_DOCKER_IMAGE);
+        let mut docker_tag: String = String::from(YAAB_DOCKER_TAG);
+        let mut docker_registry: String = String::from(YAAB_DOCKER_REGISTRY);
         let mut docker_args: Vec<String> = vec![];
         let mut docker_disabled: String = String::from("false");
         let mut docker_top_dir: String = String::from("");
@@ -92,14 +92,14 @@ impl WsSettings {
                 docker_image = Self::get_str_value(
                     "image",
                     docker_data,
-                    Some(String::from(BAKERY_DOCKER_IMAGE)),
+                    Some(String::from(YAAB_DOCKER_IMAGE)),
                 )?;
                 docker_tag =
-                    Self::get_str_value("tag", docker_data, Some(String::from(BAKERY_DOCKER_TAG)))?;
+                    Self::get_str_value("tag", docker_data, Some(String::from(YAAB_DOCKER_TAG)))?;
                 docker_registry = Self::get_str_value(
                     "registry",
                     docker_data,
-                    Some(String::from(BAKERY_DOCKER_REGISTRY)),
+                    Some(String::from(YAAB_DOCKER_REGISTRY)),
                 )?;
                 docker_args = Self::get_array_value("args", docker_data, Some(vec![]))?;
                 docker_top_dir =
