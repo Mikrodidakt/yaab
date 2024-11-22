@@ -19,7 +19,7 @@ The build config is what describes building the product for yaab. A typical buil
                 "task": {
                         "index": "0",
                         "name": "task",
-                        "type": "hlos|non-hlos|qssi|vendor|kernel",
+                        "type": "non-hlos|qssi|vendor|kernel",
                         "initenv": "",
                         "disabled": "true|false",
                         "condition": "true|false",

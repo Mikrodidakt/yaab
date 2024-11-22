@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use std::collections::HashMap;
 
 use crate::cli::Cli;
-use crate::commands::{BBaseCommand, BCommand, BError};
+use crate::commands::{YBaseCommand, YCommand, BError};
 use crate::data::WsContextData;
 use crate::executers::Docker;
 use crate::workspace::Workspace;
@@ -11,11 +11,11 @@ use crate::workspace::WsCustomSubCmdHandler;
 static BCOMMAND: &str = "upload";
 static BCOMMAND_ABOUT: &str = "Upload artifacts to the Artifactory server.";
 pub struct UploadCommand {
-    cmd: BBaseCommand,
+    cmd: YBaseCommand,
     // Your struct fields and methods here
 }
 
-impl BCommand for UploadCommand {
+impl YCommand for UploadCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
         if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
             if sub_matches.contains_id("config") {
@@ -117,7 +117,7 @@ impl UploadCommand {
         // Initialize and return a new DeployCommand instance
         UploadCommand {
             // Initialize fields if any
-            cmd: BBaseCommand {
+            cmd: YBaseCommand {
                 cmd_str: String::from(BCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
@@ -134,7 +134,7 @@ mod tests {
     use tempdir::TempDir;
 
     use crate::cli::*;
-    use crate::commands::{BCommand, UploadCommand};
+    use crate::commands::{YCommand, UploadCommand};
     use crate::error::BError;
     use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
 

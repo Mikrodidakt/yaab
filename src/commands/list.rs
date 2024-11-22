@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 
 use crate::cli::Cli;
-use crate::commands::{BBaseCommand, BCommand, BError};
+use crate::commands::{YBaseCommand, YCommand, BError};
 use crate::workspace::Workspace;
 
 //use clap::{ArgMatches, value_parser};
@@ -10,11 +10,11 @@ static BCOMMAND: &str = "list";
 static BCOMMAND_ABOUT: &str =
     "List all builds configs or all tasks available for a specific build config.";
 pub struct ListCommand {
-    cmd: BBaseCommand,
+    cmd: YBaseCommand,
     // Your struct fields and methods here
 }
 
-impl BCommand for ListCommand {
+impl YCommand for ListCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
         if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
             if sub_matches.contains_id("config") {
@@ -129,7 +129,7 @@ impl ListCommand {
         // Initialize and return a new BuildCommand instance
         ListCommand {
             // Initialize fields if any
-            cmd: BBaseCommand {
+            cmd: YBaseCommand {
                 cmd_str: String::from(BCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
@@ -146,7 +146,7 @@ mod tests {
     use tempdir::TempDir;
 
     use crate::cli::*;
-    use crate::commands::{BCommand, ListCommand};
+    use crate::commands::{YCommand, ListCommand};
     use crate::error::BError;
     use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
 

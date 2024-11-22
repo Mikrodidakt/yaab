@@ -2,18 +2,18 @@ use indexmap::{indexmap, IndexMap};
 use std::collections::HashMap;
 
 use crate::cli::Cli;
-use crate::commands::{BBaseCommand, BCommand, BError};
+use crate::commands::{YBaseCommand, YCommand, BError};
 use crate::data::{WsContextData, CTX_KEY_DEVICE, CTX_KEY_IMAGE};
 use crate::workspace::{Workspace, WsCustomSubCmdHandler};
 
 static BCOMMAND: &str = "deploy";
 static BCOMMAND_ABOUT: &str = "Deploy artifacts to the target.";
 pub struct DeployCommand {
-    cmd: BBaseCommand,
+    cmd: YBaseCommand,
     // Your struct fields and methods here
 }
 
-impl BCommand for DeployCommand {
+impl YCommand for DeployCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
         if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
             if sub_matches.contains_id("config") {
@@ -123,7 +123,7 @@ impl DeployCommand {
         // Initialize and return a new DeployCommand instance
         DeployCommand {
             // Initialize fields if any
-            cmd: BBaseCommand {
+            cmd: YBaseCommand {
                 cmd_str: String::from(BCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
@@ -140,7 +140,7 @@ mod tests {
     use tempdir::TempDir;
 
     use crate::cli::*;
-    use crate::commands::{BCommand, DeployCommand};
+    use crate::commands::{YCommand, DeployCommand};
     use crate::error::BError;
     use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
 

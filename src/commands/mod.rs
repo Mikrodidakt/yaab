@@ -18,8 +18,8 @@ use crate::executers::docker::Docker;
 use crate::executers::DockerImage;
 use crate::workspace::Workspace;
 
-// Bakery SubCommand
-pub trait BCommand {
+// Yaab SubCommand
+pub trait YCommand {
     fn setup_context(&self, ctx: Vec<String>) -> IndexMap<String, String> {
         let context: IndexMap<String, String> = ctx
             .iter()
@@ -144,7 +144,7 @@ pub trait BCommand {
     fn cmd_str(&self) -> &str;
 }
 
-pub struct BBaseCommand {
+pub struct YBaseCommand {
     cmd_str: String,
     sub_cmd: clap::Command,
     interactive: bool,
@@ -152,8 +152,8 @@ pub struct BBaseCommand {
     //_env: Vars,
 }
 
-pub fn get_supported_cmds() -> HashMap<&'static str, Box<dyn BCommand>> {
-    let mut supported_cmds: HashMap<&'static str, Box<dyn BCommand>> = HashMap::new();
+pub fn get_supported_cmds() -> HashMap<&'static str, Box<dyn YCommand>> {
+    let mut supported_cmds: HashMap<&'static str, Box<dyn YCommand>> = HashMap::new();
 
     // Add supported commands to the HashMap
     supported_cmds.insert("build", Box::new(BuildCommand::new()));

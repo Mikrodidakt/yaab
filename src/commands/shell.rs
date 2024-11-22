@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use crate::cli::Cli;
-use crate::commands::{BBaseCommand, BCommand, BError};
+use crate::commands::{YBaseCommand, YCommand, BError};
 use crate::executers::{Docker, DockerImage};
 use crate::workspace::Workspace;
 
@@ -10,11 +10,11 @@ static BCOMMAND: &str = "shell";
 static BCOMMAND_ABOUT: &str =
     "Initiate a shell within Docker or execute any command within the BitBake environment.";
 pub struct ShellCommand {
-    cmd: BBaseCommand,
+    cmd: YBaseCommand,
     // Your struct fields and methods here
 }
 
-impl BCommand for ShellCommand {
+impl YCommand for ShellCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
         if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
             if sub_matches.contains_id("config") {
@@ -177,7 +177,7 @@ impl ShellCommand {
         // Initialize and return a new BuildCommand instance
         ShellCommand {
             // Initialize fields if any
-            cmd: BBaseCommand {
+            cmd: YBaseCommand {
                 cmd_str: String::from(BCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,

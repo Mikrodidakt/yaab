@@ -1,11 +1,11 @@
-use crate::commands::BCommand;
+use crate::commands::YCommand;
 use crate::error::BError;
 use std::collections::HashMap;
 
 use super::get_supported_cmds;
 
 pub struct CmdHandler {
-    cmds: HashMap<&'static str, Box<dyn BCommand>>,
+    cmds: HashMap<&'static str, Box<dyn YCommand>>,
 }
 
 impl CmdHandler {
@@ -15,7 +15,7 @@ impl CmdHandler {
         }
     }
 
-    pub fn get_cmd(&self, cmd_str: &str) -> Result<&Box<dyn BCommand>, BError> {
+    pub fn get_cmd(&self, cmd_str: &str) -> Result<&Box<dyn YCommand>, BError> {
         match self.cmds.get(cmd_str) {
             Some(command) => Ok(command),
             None => Err(BError::CmdError(String::from("Invalid command"))),
@@ -37,13 +37,13 @@ impl CmdHandler {
 
 #[cfg(test)]
 mod tests {
-    use crate::commands::{BCommand, CmdHandler};
+    use crate::commands::{YCommand, CmdHandler};
     use crate::error::BError;
 
     #[test]
     fn test_get_build_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("build");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("build");
 
         match cmd {
             Ok(command) => {
@@ -58,7 +58,7 @@ mod tests {
     #[test]
     fn test_get_clean_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("clean");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("clean");
 
         match cmd {
             Ok(command) => {
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn test_get_shell_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("shell");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("shell");
 
         match cmd {
             Ok(command) => {
@@ -88,7 +88,7 @@ mod tests {
     #[test]
     fn test_get_setup_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("setup");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("setup");
 
         match cmd {
             Ok(command) => {
@@ -103,7 +103,7 @@ mod tests {
     #[test]
     fn test_get_sync_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("sync");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("sync");
 
         match cmd {
             Ok(command) => {
@@ -118,7 +118,7 @@ mod tests {
     #[test]
     fn test_get_deploy_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("deploy");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("deploy");
 
         match cmd {
             Ok(command) => {
@@ -133,7 +133,7 @@ mod tests {
     #[test]
     fn test_get_upload_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("upload");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("upload");
 
         match cmd {
             Ok(command) => {
@@ -148,7 +148,7 @@ mod tests {
     #[test]
     fn test_get_list_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("list");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("list");
 
         match cmd {
             Ok(command) => {
@@ -163,7 +163,7 @@ mod tests {
     #[test]
     fn test_get_invalid_command() {
         let cmd_handler: CmdHandler = CmdHandler::new();
-        let cmd: Result<&Box<dyn BCommand>, BError> = cmd_handler.get_cmd("invalid");
+        let cmd: Result<&Box<dyn YCommand>, BError> = cmd_handler.get_cmd("invalid");
 
         match cmd {
             Ok(command) => {

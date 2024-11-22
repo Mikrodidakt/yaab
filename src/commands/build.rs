@@ -2,7 +2,7 @@ use indexmap::{indexmap, IndexMap};
 use std::collections::HashMap;
 
 use crate::cli::Cli;
-use crate::commands::{BBaseCommand, BCommand};
+use crate::commands::{YBaseCommand, YCommand};
 use crate::data::WsContextData;
 use crate::error::BError;
 use crate::executers::Docker;
@@ -13,11 +13,11 @@ static BCOMMAND_ABOUT: &str =
     "Execute a build, either a full build or a task of one of the builds.";
 
 pub struct BuildCommand {
-    cmd: BBaseCommand,
+    cmd: YBaseCommand,
     // Your struct fields and methods here
 }
 
-impl BCommand for BuildCommand {
+impl YCommand for BuildCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
         if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
             if sub_matches.contains_id("config") {
@@ -294,7 +294,7 @@ impl BuildCommand {
         // Initialize and return a new BuildCommand instance
         BuildCommand {
             // Initialize fields if any
-            cmd: BBaseCommand {
+            cmd: YBaseCommand {
                 cmd_str: String::from(BCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,

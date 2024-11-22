@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use crate::cli::{CallParams, Logger, System};
-use crate::commands::{BCommand, CmdHandler};
+use crate::commands::{YCommand, CmdHandler};
 use crate::error::BError;
 
 pub struct Cli {
@@ -99,7 +99,7 @@ impl Cli {
         self.system.init_env_file(init_file, build_dir)
     }
 
-    pub fn get_command(&self, name: &str) -> Result<&Box<dyn BCommand>, BError> {
+    pub fn get_command(&self, name: &str) -> Result<&Box<dyn YCommand>, BError> {
         self.cmd_handler.get_cmd(&name)
     }
 

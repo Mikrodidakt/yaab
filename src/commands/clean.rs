@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use std::collections::HashMap;
 
 use crate::cli::Cli;
-use crate::commands::{BBaseCommand, BCommand};
+use crate::commands::{YBaseCommand, YCommand};
 use crate::data::WsContextData;
 use crate::error::BError;
 use crate::executers::Docker;
@@ -11,11 +11,11 @@ use crate::workspace::{Workspace, WsTaskHandler};
 static BCOMMAND: &str = "clean";
 static BCOMMAND_ABOUT: &str = "Clean one or all tasks defined in a build config.";
 pub struct CleanCommand {
-    cmd: BBaseCommand,
+    cmd: YBaseCommand,
     // Your struct fields and methods here
 }
 
-impl BCommand for CleanCommand {
+impl YCommand for CleanCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
         if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
             if sub_matches.contains_id("config") {
@@ -141,7 +141,7 @@ impl CleanCommand {
         // Initialize and return a new BuildCommand instance
         CleanCommand {
             // Initialize fields if any
-            cmd: BBaseCommand {
+            cmd: YBaseCommand {
                 cmd_str: String::from(BCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
@@ -158,7 +158,7 @@ mod tests {
     use tempdir::TempDir;
 
     use crate::cli::*;
-    use crate::commands::{BCommand, CleanCommand};
+    use crate::commands::{YCommand, CleanCommand};
     use crate::error::BError;
     use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
 

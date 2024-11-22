@@ -1,5 +1,5 @@
 use crate::cli::{BLogger, Cli};
-use crate::commands::BCommand;
+use crate::commands::YCommand;
 use crate::configs::WsConfigFileHandler;
 use crate::error::BError;
 use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
@@ -54,7 +54,7 @@ impl Yaab {
         let settings: WsSettingsHandler =
             self.match_or_exit::<WsSettingsHandler>(cfg_handler.ws_settings());
         let cmd_name: &str = self.cli.get_args().subcommand_name().unwrap();
-        let cmd_result: Result<&Box<dyn BCommand>, BError> = self.cli.get_command(cmd_name);
+        let cmd_result: Result<&Box<dyn YCommand>, BError> = self.cli.get_command(cmd_name);
 
         match cmd_result {
             Ok(command) => {
