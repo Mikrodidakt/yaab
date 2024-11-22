@@ -8,8 +8,8 @@ use crate::error::BError;
 use crate::executers::Docker;
 use crate::workspace::{Workspace, WsTaskHandler};
 
-static BCOMMAND: &str = "clean";
-static BCOMMAND_ABOUT: &str = "Clean one or all tasks defined in a build config.";
+static YCOMMAND: &str = "clean";
+static YCOMMAND_ABOUT: &str = "Clean one or all tasks defined in a build config.";
 pub struct CleanCommand {
     cmd: YBaseCommand,
     // Your struct fields and methods here
@@ -17,7 +17,7 @@ pub struct CleanCommand {
 
 impl YCommand for CleanCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
-        if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
+        if let Some(sub_matches) = cli.get_args().subcommand_matches(YCOMMAND) {
             if sub_matches.contains_id("config") {
                 if let Some(value) = sub_matches.get_one::<String>("config") {
                     return value.clone();
@@ -41,9 +41,9 @@ impl YCommand for CleanCommand {
     }
 
     fn execute(&self, cli: &Cli, workspace: &mut Workspace) -> Result<(), BError> {
-        let config: String = self.get_arg_str(cli, "config", BCOMMAND)?;
-        let ctx: Vec<String> = self.get_arg_many(cli, "ctx", BCOMMAND)?;
-        let tasks: Vec<String> = self.get_arg_many(cli, "tasks", BCOMMAND)?;
+        let config: String = self.get_arg_str(cli, "config", YCOMMAND)?;
+        let ctx: Vec<String> = self.get_arg_many(cli, "ctx", YCOMMAND)?;
+        let tasks: Vec<String> = self.get_arg_many(cli, "tasks", YCOMMAND)?;
         let args_context: IndexMap<String, String> = self.setup_context(ctx);
         let context: WsContextData = WsContextData::new(&args_context)?;
 
@@ -111,8 +111,8 @@ impl YCommand for CleanCommand {
 
 impl CleanCommand {
     pub fn new() -> Self {
-        let subcmd: clap::Command = clap::Command::new(BCOMMAND)
-        .about(BCOMMAND_ABOUT)
+        let subcmd: clap::Command = clap::Command::new(YCOMMAND)
+        .about(YCOMMAND_ABOUT)
         .arg(
             clap::Arg::new("config")
                 .short('c')
@@ -142,7 +142,7 @@ impl CleanCommand {
         CleanCommand {
             // Initialize fields if any
             cmd: YBaseCommand {
-                cmd_str: String::from(BCOMMAND),
+                cmd_str: String::from(YCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
                 require_docker: true,

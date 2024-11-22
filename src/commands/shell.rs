@@ -6,8 +6,8 @@ use crate::commands::{YBaseCommand, YCommand, BError};
 use crate::executers::{Docker, DockerImage};
 use crate::workspace::Workspace;
 
-static BCOMMAND: &str = "shell";
-static BCOMMAND_ABOUT: &str =
+static YCOMMAND: &str = "shell";
+static YCOMMAND_ABOUT: &str =
     "Initiate a shell within Docker or execute any command within the BitBake environment.";
 pub struct ShellCommand {
     cmd: YBaseCommand,
@@ -16,7 +16,7 @@ pub struct ShellCommand {
 
 impl YCommand for ShellCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
-        if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
+        if let Some(sub_matches) = cli.get_args().subcommand_matches(YCOMMAND) {
             if sub_matches.contains_id("config") {
                 if let Some(value) = sub_matches.get_one::<String>("config") {
                     return value.clone();
@@ -40,12 +40,12 @@ impl YCommand for ShellCommand {
     }
 
     fn execute(&self, cli: &Cli, workspace: &mut Workspace) -> Result<(), BError> {
-        let config: String = self.get_arg_str(cli, "config", BCOMMAND)?;
-        let docker: String = self.get_arg_str(cli, "docker", BCOMMAND)?;
-        let volumes: Vec<String> = self.get_arg_many(cli, "volume", BCOMMAND)?;
-        let env: Vec<String> = self.get_arg_many(cli, "env", BCOMMAND)?;
-        let cmd: String = self.get_arg_str(cli, "run", BCOMMAND)?;
-        let docker_pull: bool = self.get_arg_flag(cli, "docker_pull", BCOMMAND)?;
+        let config: String = self.get_arg_str(cli, "config", YCOMMAND)?;
+        let docker: String = self.get_arg_str(cli, "docker", YCOMMAND)?;
+        let volumes: Vec<String> = self.get_arg_many(cli, "volume", YCOMMAND)?;
+        let env: Vec<String> = self.get_arg_many(cli, "env", YCOMMAND)?;
+        let cmd: String = self.get_arg_str(cli, "run", YCOMMAND)?;
+        let docker_pull: bool = self.get_arg_flag(cli, "docker_pull", YCOMMAND)?;
 
         /*
          * If docker is enabled in the workspace settings then yaab will be bootstraped into a docker container
@@ -120,8 +120,8 @@ impl YCommand for ShellCommand {
 
 impl ShellCommand {
     pub fn new() -> Self {
-        let subcmd: clap::Command = clap::Command::new(BCOMMAND)
-        .about(BCOMMAND_ABOUT)
+        let subcmd: clap::Command = clap::Command::new(YCOMMAND)
+        .about(YCOMMAND_ABOUT)
         .arg(
             clap::Arg::new("config")
                 .short('c')
@@ -178,7 +178,7 @@ impl ShellCommand {
         ShellCommand {
             // Initialize fields if any
             cmd: YBaseCommand {
-                cmd_str: String::from(BCOMMAND),
+                cmd_str: String::from(YCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
                 require_docker: true,

@@ -8,8 +8,8 @@ use crate::executers::Docker;
 use crate::workspace::Workspace;
 use crate::workspace::WsCustomSubCmdHandler;
 
-static BCOMMAND: &str = "upload";
-static BCOMMAND_ABOUT: &str = "Upload artifacts to the Artifactory server.";
+static YCOMMAND: &str = "upload";
+static YCOMMAND_ABOUT: &str = "Upload artifacts to the Artifactory server.";
 pub struct UploadCommand {
     cmd: YBaseCommand,
     // Your struct fields and methods here
@@ -17,7 +17,7 @@ pub struct UploadCommand {
 
 impl YCommand for UploadCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
-        if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
+        if let Some(sub_matches) = cli.get_args().subcommand_matches(YCOMMAND) {
             if sub_matches.contains_id("config") {
                 if let Some(value) = sub_matches.get_one::<String>("config") {
                     return value.clone();
@@ -41,11 +41,11 @@ impl YCommand for UploadCommand {
     }
 
     fn execute(&self, cli: &Cli, workspace: &mut Workspace) -> Result<(), BError> {
-        let config: String = self.get_arg_str(cli, "config", BCOMMAND)?;
-        let ctx: Vec<String> = self.get_arg_many(cli, "ctx", BCOMMAND)?;
+        let config: String = self.get_arg_str(cli, "config", YCOMMAND)?;
+        let ctx: Vec<String> = self.get_arg_many(cli, "ctx", YCOMMAND)?;
         let args_context: IndexMap<String, String> = self.setup_context(ctx);
         let context: WsContextData = WsContextData::new(&args_context)?;
-        let volumes: Vec<String> = self.get_arg_many(cli, "volume", BCOMMAND)?;
+        let volumes: Vec<String> = self.get_arg_many(cli, "volume", YCOMMAND)?;
 
         if !workspace.valid_config(config.as_str()) {
             return Err(BError::CliError(format!(
@@ -82,8 +82,8 @@ impl YCommand for UploadCommand {
 
 impl UploadCommand {
     pub fn new() -> Self {
-        let subcmd: clap::Command = clap::Command::new(BCOMMAND)
-      .about(BCOMMAND_ABOUT)
+        let subcmd: clap::Command = clap::Command::new(YCOMMAND)
+      .about(YCOMMAND_ABOUT)
       .arg(
         clap::Arg::new("config")
             .short('c')
@@ -118,7 +118,7 @@ impl UploadCommand {
         UploadCommand {
             // Initialize fields if any
             cmd: YBaseCommand {
-                cmd_str: String::from(BCOMMAND),
+                cmd_str: String::from(YCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
                 require_docker: false,

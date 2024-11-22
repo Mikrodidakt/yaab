@@ -8,8 +8,8 @@ use crate::error::BError;
 use crate::executers::Docker;
 use crate::workspace::{Workspace, WsTaskHandler};
 
-static BCOMMAND: &str = "build";
-static BCOMMAND_ABOUT: &str =
+static YCOMMAND: &str = "build";
+static YCOMMAND_ABOUT: &str =
     "Execute a build, either a full build or a task of one of the builds.";
 
 pub struct BuildCommand {
@@ -19,7 +19,7 @@ pub struct BuildCommand {
 
 impl YCommand for BuildCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
-        if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
+        if let Some(sub_matches) = cli.get_args().subcommand_matches(YCOMMAND) {
             if sub_matches.contains_id("config") {
                 if let Some(value) = sub_matches.get_one::<String>("config") {
                     return value.clone();
@@ -43,18 +43,18 @@ impl YCommand for BuildCommand {
     }
 
     fn execute(&self, cli: &Cli, workspace: &mut Workspace) -> Result<(), BError> {
-        let config: String = self.get_arg_str(cli, "config", BCOMMAND)?;
-        let version: String = self.get_arg_str(cli, "platform_version", BCOMMAND)?;
-        let build_id: String = self.get_arg_str(cli, "build_id", BCOMMAND)?;
-        let sha: String = self.get_arg_str(cli, "build_sha", BCOMMAND)?;
-        let dry_run: bool = self.get_arg_flag(cli, "dry_run", BCOMMAND)?;
-        let interactive_str: String = self.get_arg_str(cli, "interactive", BCOMMAND)?;
-        let ctx: Vec<String> = self.get_arg_many(cli, "ctx", BCOMMAND)?;
-        let env: Vec<String> = self.get_arg_many(cli, "env", BCOMMAND)?;
-        let volumes: Vec<String> = self.get_arg_many(cli, "volume", BCOMMAND)?;
-        let tasks: Vec<String> = self.get_arg_many(cli, "tasks", BCOMMAND)?;
-        let variant: String = self.get_arg_str(cli, "variant", BCOMMAND)?;
-        let verbose: bool = self.get_arg_flag(cli, "verbose", BCOMMAND)?;
+        let config: String = self.get_arg_str(cli, "config", YCOMMAND)?;
+        let version: String = self.get_arg_str(cli, "platform_version", YCOMMAND)?;
+        let build_id: String = self.get_arg_str(cli, "build_id", YCOMMAND)?;
+        let sha: String = self.get_arg_str(cli, "build_sha", YCOMMAND)?;
+        let dry_run: bool = self.get_arg_flag(cli, "dry_run", YCOMMAND)?;
+        let interactive_str: String = self.get_arg_str(cli, "interactive", YCOMMAND)?;
+        let ctx: Vec<String> = self.get_arg_many(cli, "ctx", YCOMMAND)?;
+        let env: Vec<String> = self.get_arg_many(cli, "env", YCOMMAND)?;
+        let volumes: Vec<String> = self.get_arg_many(cli, "volume", YCOMMAND)?;
+        let tasks: Vec<String> = self.get_arg_many(cli, "tasks", YCOMMAND)?;
+        let variant: String = self.get_arg_str(cli, "variant", YCOMMAND)?;
+        let verbose: bool = self.get_arg_flag(cli, "verbose", YCOMMAND)?;
         let mut bb_variables: Vec<String> = Vec::new();
         let mut interactive: bool = false;
 
@@ -193,8 +193,8 @@ impl BuildCommand {
     }
 
     pub fn new() -> Self {
-        let subcmd: clap::Command = clap::Command::new(BCOMMAND)
-            .about(BCOMMAND_ABOUT)
+        let subcmd: clap::Command = clap::Command::new(YCOMMAND)
+            .about(YCOMMAND_ABOUT)
             .arg_required_else_help(true)
             .arg(
                 clap::Arg::new("config")
@@ -295,7 +295,7 @@ impl BuildCommand {
         BuildCommand {
             // Initialize fields if any
             cmd: YBaseCommand {
-                cmd_str: String::from(BCOMMAND),
+                cmd_str: String::from(YCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
                 require_docker: true,

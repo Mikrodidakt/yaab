@@ -6,8 +6,8 @@ use crate::workspace::Workspace;
 
 //use clap::{ArgMatches, value_parser};
 
-static BCOMMAND: &str = "list";
-static BCOMMAND_ABOUT: &str =
+static YCOMMAND: &str = "list";
+static YCOMMAND_ABOUT: &str =
     "List all builds configs or all tasks available for a specific build config.";
 pub struct ListCommand {
     cmd: YBaseCommand,
@@ -16,7 +16,7 @@ pub struct ListCommand {
 
 impl YCommand for ListCommand {
     fn get_config_name(&self, cli: &Cli) -> String {
-        if let Some(sub_matches) = cli.get_args().subcommand_matches(BCOMMAND) {
+        if let Some(sub_matches) = cli.get_args().subcommand_matches(YCOMMAND) {
             if sub_matches.contains_id("config") {
                 if let Some(value) = sub_matches.get_one::<String>("config") {
                     return value.clone();
@@ -40,8 +40,8 @@ impl YCommand for ListCommand {
     }
 
     fn execute(&self, cli: &Cli, workspace: &mut Workspace) -> Result<(), BError> {
-        let config: String = self.get_arg_str(cli, "config", BCOMMAND)?;
-        let ctx: bool = self.get_arg_flag(cli, "ctx", BCOMMAND)?;
+        let config: String = self.get_arg_str(cli, "config", YCOMMAND)?;
+        let ctx: bool = self.get_arg_flag(cli, "ctx", YCOMMAND)?;
         if config == "NA" {
             // default value if not specified
             // If no config is specified then we will list all supported build configs
@@ -104,8 +104,8 @@ impl YCommand for ListCommand {
 
 impl ListCommand {
     pub fn new() -> Self {
-        let subcmd: clap::Command = clap::Command::new(BCOMMAND)
-            .about(BCOMMAND_ABOUT)
+        let subcmd: clap::Command = clap::Command::new(YCOMMAND)
+            .about(YCOMMAND_ABOUT)
             .arg(
                 clap::Arg::new("config")
                     .short('c')
@@ -130,7 +130,7 @@ impl ListCommand {
         ListCommand {
             // Initialize fields if any
             cmd: YBaseCommand {
-                cmd_str: String::from(BCOMMAND),
+                cmd_str: String::from(YCOMMAND),
                 sub_cmd: subcmd,
                 interactive: true,
                 require_docker: false,
