@@ -8,7 +8,7 @@ use crate::workspace::Workspace;
 use crate::workspace::WsCustomSubCmdHandler;
 
 static YCOMMAND: &str = "setup";
-static YCOMMAND_ABOUT: &str = "Set up the workspace, e.g., initialize git submodules.";
+static YCOMMAND_ABOUT: &str = "Set up the workspace, e.g., initialize repos using repo.";
 pub struct SetupCommand {
     cmd: YBaseCommand,
     // Your struct fields and methods here

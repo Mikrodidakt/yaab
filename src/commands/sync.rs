@@ -8,7 +8,7 @@ use crate::workspace::Workspace;
 use crate::workspace::WsCustomSubCmdHandler;
 
 static YCOMMAND: &str = "sync";
-static YCOMMAND_ABOUT: &str = "Sync workspace e.g sync/update git submodules.";
+static YCOMMAND_ABOUT: &str = "Sync workspace e.g sync/update repos using repo.";
 pub struct SyncCommand {
     cmd: YBaseCommand,
     // Your struct fields and methods here
