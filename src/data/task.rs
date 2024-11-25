@@ -9,10 +9,12 @@ use crate::error::BError;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum TType {
-    NonHLOS,
+    NONHLOS,
+    HLOS,
     QSSI,
     VENDOR,
     KERNEL,
+    AOSP,
 }
 
 pub struct WsTaskData {
@@ -48,7 +50,7 @@ impl WsTaskData {
     pub fn new(data: &Value, work_dir: &PathBuf) -> Result<Self, BError> {
         let index: u32 = Self::get_u32_value("index", &data, None)?;
         let name: String = Self::get_str_value("name", &data, None)?;
-        let ttype: String = Self::get_str_value("type", &data, Some(String::from("vendor")))?;
+        let ttype: String = Self::get_str_value("type", &data, Some(String::from("aosp")))?;
         let disabled: String = Self::get_str_value("disabled", &data, Some(String::from("false")))?;
         let build_dir: String = Self::get_str_value("builddir", &data, Some(String::from("")))?;
         let docker: String = Self::get_str_value("docker", data, Some(String::from("")))?;
@@ -63,7 +65,13 @@ impl WsTaskData {
         let enum_ttype: TType;
         match ttype.as_str() {
             "non-hlos" => {
-                enum_ttype = TType::NonHLOS;
+                enum_ttype = TType::NONHLOS;
+            }
+            "hlos" => {
+                enum_ttype = TType::HLOS;
+            }
+            "aosp" => {
+                enum_ttype = TType::AOSP;
             }
             "kernel" => {
                 enum_ttype = TType::KERNEL;
@@ -173,7 +181,6 @@ impl WsTaskData {
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
     use indexmap::{indexmap, IndexMap};
@@ -186,21 +193,45 @@ mod tests {
     use crate::helper::Helper;
 
     #[test]
-    fn test_ws_task_data_nonhlos() {
+    fn test_ws_task_data_default() {
+        let json_task_config: &str = r#"
+        {
+            "index": "0",
+            "name": "task1-name"
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
+        let task: WsTaskData =
+            WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
+        assert_eq!(task.index(), 0);
+        assert_eq!(task.name(), "task1-name");
+        assert_eq!(task.disabled(), false);
+        assert_eq!(task.condition(), true);
+        assert_eq!(task.description(), "NA");
+        assert_eq!(task.init_env(), &PathBuf::from("/workspace"));
+        assert_eq!(task.ttype(), &TType::AOSP);
+        assert_eq!(task.build_dir(), &PathBuf::from("/workspace"));
+        assert_eq!(task.build_cmd(), "");
+        assert_eq!(task.clean_cmd(), "");
+        assert_eq!(task.docker_image(), "");
+    }
+
+    #[test]
+    fn test_ws_task_data_qssi() {
         let json_task_config: &str = r#"
         {
             "index": "0",
             "name": "task1-name",
             "description": "test",
+            "type": "qssi",
+            "initienv": "build/envsetup.sh",
             "disabled": "false",
-            "type": "non-hlos",
             "builddir": "test/builddir",
             "docker": "test-registry/test-image:0.1",
             "build": "build-cmd",
             "clean": "clean-cmd"
         }"#;
         let work_dir: PathBuf = PathBuf::from("/workspace");
-        let bb_build_dir: PathBuf = work_dir.clone().join(String::from("test/builddir"));
         let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
         let task: WsTaskData =
             WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
@@ -209,7 +240,104 @@ mod tests {
         assert_eq!(task.disabled(), false);
         assert_eq!(task.condition(), true);
         assert_eq!(task.description(), "test");
-        assert_eq!(task.ttype(), &TType::NonHLOS);
+        assert_eq!(task.init_env(), &PathBuf::from("/workspace/test/builddir/build/envsetup.sh"));
+        assert_eq!(task.ttype(), &TType::QSSI);
+        assert_eq!(task.build_dir(), &PathBuf::from("/workspace/test/builddir"));
+        assert_eq!(task.build_cmd(), "build-cmd");
+        assert_eq!(task.clean_cmd(), "clean-cmd");
+        assert_eq!(task.docker_image(), "test-registry/test-image:0.1");
+    }
+
+    #[test]
+    fn test_ws_task_data_vendor() {
+        let json_task_config: &str = r#"
+        {
+            "index": "0",
+            "name": "task1-name",
+            "description": "test",
+            "type": "vendor",
+            "initienv": "build/envsetup.sh",
+            "disabled": "false",
+            "builddir": "test/builddir",
+            "docker": "test-registry/test-image:0.1",
+            "build": "build-cmd",
+            "clean": "clean-cmd"
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
+        let task: WsTaskData =
+            WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
+        assert_eq!(task.index(), 0);
+        assert_eq!(task.name(), "task1-name");
+        assert_eq!(task.disabled(), false);
+        assert_eq!(task.condition(), true);
+        assert_eq!(task.description(), "test");
+        assert_eq!(task.init_env(), &PathBuf::from("/workspace/test/builddir/build/envsetup.sh"));
+        assert_eq!(task.ttype(), &TType::VENDOR);
+        assert_eq!(task.build_dir(), &PathBuf::from("/workspace/test/builddir"));
+        assert_eq!(task.build_cmd(), "build-cmd");
+        assert_eq!(task.clean_cmd(), "clean-cmd");
+        assert_eq!(task.docker_image(), "test-registry/test-image:0.1");
+    }
+
+    #[test]
+    fn test_ws_task_data_nonhlos() {
+        let json_task_config: &str = r#"
+        {
+            "index": "0",
+            "name": "task1-name",
+            "description": "test",
+            "type": "nonhlos",
+            "initienv": "build/envsetup.sh",
+            "disabled": "false",
+            "builddir": "test/builddir",
+            "docker": "test-registry/test-image:0.1",
+            "build": "build-cmd",
+            "clean": "clean-cmd"
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
+        let task: WsTaskData =
+            WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
+        assert_eq!(task.index(), 0);
+        assert_eq!(task.name(), "task1-name");
+        assert_eq!(task.disabled(), false);
+        assert_eq!(task.condition(), true);
+        assert_eq!(task.description(), "test");
+        assert_eq!(task.init_env(), &PathBuf::from("/workspace/test/builddir/build/envsetup.sh"));
+        assert_eq!(task.ttype(), &TType::NONHLOS);
+        assert_eq!(task.build_dir(), &PathBuf::from("/workspace/test/builddir"));
+        assert_eq!(task.build_cmd(), "build-cmd");
+        assert_eq!(task.clean_cmd(), "clean-cmd");
+        assert_eq!(task.docker_image(), "test-registry/test-image:0.1");
+    }
+
+    #[test]
+    fn test_ws_task_data_kernel() {
+        let json_task_config: &str = r#"
+        {
+            "index": "0",
+            "name": "task1-name",
+            "description": "test",
+            "type": "kernel",
+            "initienv": "build/envsetup.sh",
+            "disabled": "false",
+            "builddir": "test/builddir",
+            "docker": "test-registry/test-image:0.1",
+            "build": "build-cmd",
+            "clean": "clean-cmd"
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
+        let task: WsTaskData =
+            WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
+        assert_eq!(task.index(), 0);
+        assert_eq!(task.name(), "task1-name");
+        assert_eq!(task.disabled(), false);
+        assert_eq!(task.condition(), true);
+        assert_eq!(task.description(), "test");
+        assert_eq!(task.init_env(), &PathBuf::from("/workspace/test/builddir/build/envsetup.sh"));
+        assert_eq!(task.ttype(), &TType::KERNEL);
         assert_eq!(task.build_dir(), &PathBuf::from("/workspace/test/builddir"));
         assert_eq!(task.build_cmd(), "build-cmd");
         assert_eq!(task.clean_cmd(), "clean-cmd");
@@ -225,6 +353,7 @@ mod tests {
             "description": "test",
             "disabled": "false",
             "type": "qssi",
+            "initienv": "build/envsetup.sh",
             "builddir": "test/builddir",
             "docker": "test-registry/test-image:0.1",
             "build": "$#[BUILD_CMD] $#[BUILD_CMD_ARG]",
@@ -239,24 +368,20 @@ mod tests {
         let context: Context = Context::new(&ctx_variables);
         let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
         let mut task: WsTaskData =
-            WsTaskData::new(&data, &work_dir, &bb_build_dir).expect("Failed parsing task data");
+            WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
         task.expand_ctx(&context).unwrap();
-        assert_eq!(task.index(), 2);
+        assert_eq!(task.index(), 0);
         assert_eq!(task.name(), "task1-name");
         assert_eq!(task.disabled(), false);
         assert_eq!(task.condition(), true);
-        assert_eq!(task.ttype(), &TType::Bitbake);
+        assert_eq!(task.ttype(), &TType::QSSI);
         assert_eq!(
             task.build_dir(),
-            &PathBuf::from("/workspace/builds/test-name")
+            &PathBuf::from("/workspace/test/builddir")
         );
-        assert_eq!(task.build_cmd(), "");
-        assert_eq!(task.clean_cmd(), "");
-        assert_eq!(task.docker_image(), "");
-        assert_eq!(
-            task.recipes(),
-            &vec![String::from("test-image"), String::from("test-image:sdk")]
-        );
+        assert_eq!(task.build_cmd(), "test-cmd test-cmd-arg");
+        assert_eq!(task.clean_cmd(), "clean-cmd");
+        assert_eq!(task.docker_image(), "test-registry/test-image:0.1");
     }
 
     #[test]
@@ -268,9 +393,8 @@ mod tests {
             "type": "invalid"
         }"#;
         let work_dir: PathBuf = PathBuf::from("/workspace");
-        let bb_build_dir: PathBuf = work_dir.clone().join(String::from("test/builddir"));
         let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
-        let result: Result<WsTaskData, BError> = WsTaskData::new(&data, &work_dir, &bb_build_dir);
+        let result: Result<WsTaskData, BError> = WsTaskData::new(&data, &work_dir);
         match result {
             Ok(_rconfig) => {
                 panic!("We should have recived an error because we have no recipes defined!");
@@ -290,7 +414,6 @@ mod tests {
         {
             "index": "0",
             "name": "task1-name",
-            "type": "non-bitbake",
             "builddir": "test/builddir",
             "env": [
                 "KEY1=VALUE1",
@@ -301,10 +424,9 @@ mod tests {
             "clean": "clean-cmd"
         }"#;
         let work_dir: PathBuf = PathBuf::from("/workspace");
-        let bb_build_dir: PathBuf = work_dir.clone().join(String::from("test/builddir"));
         let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
         let task: WsTaskData =
-            WsTaskData::new(&data, &work_dir, &bb_build_dir).expect("Failed parsing task data");
+            WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
         let task_env: &IndexMap<String, String> = task.env();
         let mut i: usize = 1;
         task_env.iter().for_each(|(key, value)| {
@@ -320,7 +442,6 @@ mod tests {
         {
             "index": "0",
             "name": "task1-name",
-            "type": "non-bitbake",
             "builddir": "test/builddir",
             "env": [
                 "KEY1=$#[CTX_VALUE1]",
@@ -336,11 +457,10 @@ mod tests {
             "CTX_VALUE3".to_string() => "ctx".to_string(),
         };
         let work_dir: PathBuf = PathBuf::from("/workspace");
-        let bb_build_dir: PathBuf = work_dir.clone().join(String::from("builds/test-name"));
         let context: Context = Context::new(&ctx_variables);
         let data: Value = Helper::parse(json_task_config).expect("Failed to parse task config");
         let mut task: WsTaskData =
-            WsTaskData::new(&data, &work_dir, &bb_build_dir).expect("Failed parsing task data");
+            WsTaskData::new(&data, &work_dir).expect("Failed parsing task data");
         task.expand_ctx(&context).unwrap();
         assert_eq!(
             task.env(),
@@ -352,4 +472,3 @@ mod tests {
         );
     }
 }
-*/

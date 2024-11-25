@@ -8,7 +8,7 @@ use crate::workspace::Workspace;
 
 static YCOMMAND: &str = "shell";
 static YCOMMAND_ABOUT: &str =
-    "Initiate a shell within Docker or execute any command within the BitBake environment.";
+    "Initiate a shell within Docker or execute any command within the environment.";
 pub struct ShellCommand {
     cmd: YBaseCommand,
     // Your struct fields and methods here
@@ -46,6 +46,8 @@ impl YCommand for ShellCommand {
         let env: Vec<String> = self.get_arg_many(cli, "env", YCOMMAND)?;
         let cmd: String = self.get_arg_str(cli, "run", YCOMMAND)?;
         let docker_pull: bool = self.get_arg_flag(cli, "docker_pull", YCOMMAND)?;
+        let variant: String = self.get_arg_str(cli, "variant", YCOMMAND)?;
+        let env_type: String = self.get_arg_str(cli, "env_type", YCOMMAND)?;
 
         /*
          * If docker is enabled in the workspace settings then yaab will be bootstraped into a docker container
@@ -66,7 +68,7 @@ impl YCommand for ShellCommand {
             /*
              * We need to rebuild the command line because if the cmd is defined
              * we need to add "" around it to make sure it is not expanded and
-             * getting mixed up with the yaab command
+             * not getting mixed up with the yaab command
              */
             if !cmd.is_empty() {
                 if !config.is_empty() {
@@ -75,6 +77,14 @@ impl YCommand for ShellCommand {
 
                 if !docker.is_empty() {
                     cmd_line.append(&mut vec![String::from("-d"), docker]);
+                }
+
+                if !variant.is_empty() {
+                    cmd_line.append(&mut vec![String::from("-a"), variant]);
+                }
+
+                if !env_type.is_empty() {
+                    cmd_line.append(&mut vec![String::from("-t"), env_type]);
                 }
 
                 if !volumes.is_empty() {
@@ -126,7 +136,7 @@ impl ShellCommand {
             clap::Arg::new("config")
                 .short('c')
                 .long("config")
-                .help("Setup bitbake build environment if no task specified drop into shell")
+                .help("Setup bitbake build environment if no task specified drop into shell.")
                 .value_name("name")
                 .default_value("NA"),
         )
@@ -145,12 +155,30 @@ impl ShellCommand {
                 .help("Docker volume to mount bind when boot strapping into docker."),
         )
         .arg(
+            clap::Arg::new("variant")
+                .short('a')
+                .long("variant")
+                .value_name("variant")
+                .default_value("userdebug")
+                .value_parser(["user", "userdebug", "eng"])
+                .help("Specify the variant of the build it can be one of user, userdebug, eng. Will be available as a context variable BUILD_VARIANT."),
+        )
+        .arg(
+            clap::Arg::new("env_type")
+                .short('t')
+                .long("env-type")
+                .value_name("env_type")
+                .default_value("default")
+                .value_parser(["default", "vendor", "qssi", "kernel"])
+                .help("Specify the build environemt type it can be one of default, kernel, vendor, qssi. This will define what build env that should be sourced into the shell. Will be available as a context variable ENV_TYPE."),
+        )
+        .arg(
             clap::Arg::new("env")
                 .action(clap::ArgAction::Append)
                 .short('e')
                 .long("env")
                 .value_name("KEY=VALUE")
-                .help("Extra variables to add to build env for bitbake."),
+                .help("Extra variables to add to build env."),
         )
         .arg(
             clap::Arg::new("docker")
@@ -158,7 +186,7 @@ impl ShellCommand {
                 .long("docker")
                 .value_name("registry/image:tag")
                 .default_value("")
-                .help("Use a custome docker image when creating a shell"),
+                .help("Use a custome docker image when creating a shell."),
         )
         .arg(
             clap::Arg::new("docker_pull")
@@ -172,7 +200,7 @@ impl ShellCommand {
                 .long("run-cmd")
                 .value_name("cmd")
                 .default_value("")
-                .help("Run a command inside the docker workspace container"),
+                .help("Run a command inside the docker workspace container."),
         );
         // Initialize and return a new BuildCommand instance
         ShellCommand {
@@ -203,7 +231,7 @@ impl ShellCommand {
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
     ) -> Result<HashMap<String, String>, BError> {
-        let init_env: PathBuf = PathBuf::from(""); //= workspace.config().build_data().bitbake().init_env_file();
+        let init_env: PathBuf = PathBuf::from(""); //= workspace.config().build_data().init_env_file();
 
         /*
          * Env variables priority are
@@ -215,13 +243,8 @@ impl ShellCommand {
         cli.info(format!("source init env file {}", init_env.display()));
         let mut env: HashMap<String, String> = HashMap::new(); /* = cli.source_init_env(
             &init_env,
-            &workspace.config().build_data().bitbake().build_dir(),
+            &workspace.settings().work_dir(),
         )?;*/
-        /*
-         * Any variable that should be able to passthrough into bitbake needs to be defined as part of the bb passthrough variable
-         * we define some defaults that should always be possible to passthrough
-         */
-        let mut bb_env_passthrough_additions: String = String::from("SSTATE_DIR DL_DIR TMPDIR");
 
         /*
         /* Process the env variables from the cli */
@@ -235,17 +258,6 @@ impl ShellCommand {
         });
         */
 
-        if env.contains_key("BB_ENV_PASSTHROUGH_ADDITIONS") {
-            bb_env_passthrough_additions.push_str(
-                env.get("BB_ENV_PASSTHROUGH_ADDITIONS")
-                    .unwrap_or(&String::from("")),
-            );
-        }
-
-        env.insert(
-            String::from("BB_ENV_PASSTHROUGH_ADDITIONS"),
-            bb_env_passthrough_additions,
-        );
         Ok(env)
     }
 
@@ -280,7 +292,7 @@ impl ShellCommand {
             workspace.config().build_data().product().name().to_string(),
         );
 
-        cli.info(String::from("Start shell setting up bitbake build env"));
+        cli.info(String::from("Start shell setting up build env"));
         if !docker.is_empty() {
             let image: DockerImage = DockerImage::new(&docker)?;
             let executer: Docker = Docker::new(image, true);
