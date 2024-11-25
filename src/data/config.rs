@@ -24,7 +24,11 @@ impl WsConfigData {
         let name: String = Self::get_str_value("name", &data, Some(String::from("NA")))?;
         let init_env: String = Self::get_str_value("initenv", &data, Some(String::from("NA")))?;
 
-        Ok(WsConfigData { version, name, init_env })
+        Ok(WsConfigData {
+            version,
+            name,
+            init_env,
+        })
     }
 
     pub fn name(&self) -> &str {

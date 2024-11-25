@@ -1,7 +1,7 @@
 use indexmap::IndexMap;
 
 use crate::cli::Cli;
-use crate::commands::{YBaseCommand, YCommand, BError};
+use crate::commands::{BError, YBaseCommand, YCommand};
 use crate::workspace::Workspace;
 
 //use clap::{ArgMatches, value_parser};
@@ -90,7 +90,7 @@ impl YCommand for ListCommand {
                             }
                         ));
                     });
-               }
+                }
             } else {
                 return Err(BError::CliError(format!(
                     "Unsupported build config '{}'",
@@ -146,7 +146,7 @@ mod tests {
     use tempdir::TempDir;
 
     use crate::cli::*;
-    use crate::commands::{YCommand, ListCommand};
+    use crate::commands::{ListCommand, YCommand};
     use crate::error::BError;
     use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
 
@@ -308,89 +308,89 @@ mod tests {
         }
     }
 
-/*
-    #[test]
-    fn test_cmd_list_ctx() {
-        let temp_dir: TempDir =
-            TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
-        let work_dir: PathBuf = temp_dir.into_path();
-        let json_ws_settings: &str = r#"
-        {
-            "version": "5",
-            "builds": {
-                "supported": [
-                    "default"
+    /*
+        #[test]
+        fn test_cmd_list_ctx() {
+            let temp_dir: TempDir =
+                TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
+            let work_dir: PathBuf = temp_dir.into_path();
+            let json_ws_settings: &str = r#"
+            {
+                "version": "5",
+                "builds": {
+                    "supported": [
+                        "default"
+                    ]
+                }
+            }"#;
+            let json_build_config: &str = r#"
+            {
+                "version": "5",
+                "name": "default",
+                "description": "Test Description",
+                "arch": "test-arch",
+                "context": [
+                    "PLATFORM_VERSION=x.y.z",
+                    "BUILD_ID=abcdef",
+                    "BUILD_VARIANT=test"
                 ]
             }
-        }"#;
-        let json_build_config: &str = r#"
-        {
-            "version": "5",
-            "name": "default",
-            "description": "Test Description",
-            "arch": "test-arch",
-            "context": [
-                "PLATFORM_VERSION=x.y.z",
-                "BUILD_ID=abcdef",
-                "BUILD_VARIANT=test"
-            ]
-        }
-        "#;
-        let mut mocked_logger: MockLogger = MockLogger::new();
-        mocked_logger
-            .expect_stdout()
-            .with(mockall::predicate::eq("name: default\narch: test-arch\nmachine: test-machine\ndescription: Test Description\n".to_string()))
-            .once()
-            .returning(|_x| ());
-        mocked_logger
-            .expect_stdout()
-            .with(mockall::predicate::eq("Context variables:".to_string()))
-            .once()
-            .returning(|_x| ());
-        let ctx_variables: IndexMap<String, String> = indexmap! {
-            "MACHINE".to_string() => "test-machine".to_string(),
-            "ARCH".to_string() => "test-arch".to_string(),
-            "DISTRO".to_string() => "test-distro".to_string(),
-            "PRODUCT_NAME".to_string() => "default".to_string(),
-            "NAME".to_string() => "default".to_string(),
-            "PRODUCT_NAME".to_string() => "default".to_string(),
-            "PROJECT_NAME".to_string() => "default".to_string(),
-            "BB_BUILD_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("builds/default")).display()),
-            "BB_DEPLOY_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("builds/default/tmp/deploy/images")).display()),
-            "ARTIFACTS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("artifacts")).display()),
-            "LAYERS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("layers")).display()),
-            "SCRIPTS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("scripts")).display()),
-            "BUILDS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("builds")).display()),
-            "WORK_DIR".to_string() => format!("{}", work_dir.display()),
-            "PLATFORM_VERSION".to_string() => "x.y.z".to_string(),
-            "BUILD_ID".to_string() => "abcdef".to_string(),
-            "PLATFORM_RELEASE".to_string() => "".to_string(),
-            "BUILD_SHA".to_string() => "".to_string(),
-            "RELEASE_BUILD".to_string() => "".to_string(),
-            "BUILD_VARIANT".to_string() => "test".to_string(),
-            "ARCHIVER".to_string() => "".to_string(),
-            "DEBUG_SYMBOLS".to_string() => "".to_string(),
-            "DEVICE".to_string() => "".to_string(),
-            "IMAGE".to_string() => "".to_string(),
-            "DATE".to_string() => chrono::offset::Local::now().format("%Y-%m-%d").to_string(),
-            "TIME".to_string() => chrono::offset::Local::now().format("%H:%M").to_string(),
-        };
-        ctx_variables.iter().for_each(|(key, value)| {
+            "#;
+            let mut mocked_logger: MockLogger = MockLogger::new();
             mocked_logger
                 .expect_stdout()
-                .with(mockall::predicate::eq(format!("{}={}", key, value)))
+                .with(mockall::predicate::eq("name: default\narch: test-arch\nmachine: test-machine\ndescription: Test Description\n".to_string()))
                 .once()
                 .returning(|_x| ());
-        });
+            mocked_logger
+                .expect_stdout()
+                .with(mockall::predicate::eq("Context variables:".to_string()))
+                .once()
+                .returning(|_x| ());
+            let ctx_variables: IndexMap<String, String> = indexmap! {
+                "MACHINE".to_string() => "test-machine".to_string(),
+                "ARCH".to_string() => "test-arch".to_string(),
+                "DISTRO".to_string() => "test-distro".to_string(),
+                "PRODUCT_NAME".to_string() => "default".to_string(),
+                "NAME".to_string() => "default".to_string(),
+                "PRODUCT_NAME".to_string() => "default".to_string(),
+                "PROJECT_NAME".to_string() => "default".to_string(),
+                "BB_BUILD_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("builds/default")).display()),
+                "BB_DEPLOY_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("builds/default/tmp/deploy/images")).display()),
+                "ARTIFACTS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("artifacts")).display()),
+                "LAYERS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("layers")).display()),
+                "SCRIPTS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("scripts")).display()),
+                "BUILDS_DIR".to_string() => format!("{}", work_dir.join(PathBuf::from("builds")).display()),
+                "WORK_DIR".to_string() => format!("{}", work_dir.display()),
+                "PLATFORM_VERSION".to_string() => "x.y.z".to_string(),
+                "BUILD_ID".to_string() => "abcdef".to_string(),
+                "PLATFORM_RELEASE".to_string() => "".to_string(),
+                "BUILD_SHA".to_string() => "".to_string(),
+                "RELEASE_BUILD".to_string() => "".to_string(),
+                "BUILD_VARIANT".to_string() => "test".to_string(),
+                "ARCHIVER".to_string() => "".to_string(),
+                "DEBUG_SYMBOLS".to_string() => "".to_string(),
+                "DEVICE".to_string() => "".to_string(),
+                "IMAGE".to_string() => "".to_string(),
+                "DATE".to_string() => chrono::offset::Local::now().format("%Y-%m-%d").to_string(),
+                "TIME".to_string() => chrono::offset::Local::now().format("%H:%M").to_string(),
+            };
+            ctx_variables.iter().for_each(|(key, value)| {
+                mocked_logger
+                    .expect_stdout()
+                    .with(mockall::predicate::eq(format!("{}={}", key, value)))
+                    .once()
+                    .returning(|_x| ());
+            });
 
-        let _result: Result<(), BError> = helper_test_list_subcommand(
-            &work_dir,
-            json_ws_settings,
-            json_build_config,
-            mocked_logger,
-            MockSystem::new(),
-            vec!["yaab", "list", "--config", "default", "--ctx"],
-        );
-    }
-*/
+            let _result: Result<(), BError> = helper_test_list_subcommand(
+                &work_dir,
+                json_ws_settings,
+                json_build_config,
+                mocked_logger,
+                MockSystem::new(),
+                vec!["yaab", "list", "--config", "default", "--ctx"],
+            );
+        }
+    */
 }

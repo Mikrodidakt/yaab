@@ -158,7 +158,7 @@ mod tests {
     use tempdir::TempDir;
 
     use crate::cli::*;
-    use crate::commands::{YCommand, CleanCommand};
+    use crate::commands::{CleanCommand, YCommand};
     use crate::error::BError;
     use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
 

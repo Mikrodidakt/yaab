@@ -1,5 +1,5 @@
 use crate::cli::Cli;
-use crate::data::{WsTaskData};
+use crate::data::WsTaskData;
 use crate::error::BError;
 use crate::executers::{Docker, DockerImage, TaskExecuter};
 
@@ -28,10 +28,7 @@ impl<'a> TaskExecuter for HLOSCleanExecuter<'a> {
 
 impl<'a> HLOSCleanExecuter<'a> {
     pub fn new(cli: &'a Cli, task_data: &'a WsTaskData) -> Self {
-        HLOSCleanExecuter {
-            cli,
-            task_data,
-        }
+        HLOSCleanExecuter { cli, task_data }
     }
 }
 
@@ -128,11 +125,7 @@ impl<'a> HLOSBuildExecuter<'a> {
     }
     */
 
-    pub fn new(
-        cli: &'a Cli,
-        task_data: &'a WsTaskData,
-        bb_variables: &'a Vec<String>,
-    ) -> Self {
+    pub fn new(cli: &'a Cli, task_data: &'a WsTaskData, bb_variables: &'a Vec<String>) -> Self {
         HLOSBuildExecuter {
             cli,
             task_data,

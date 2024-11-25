@@ -1,12 +1,12 @@
 pub mod customsubcmd;
 pub mod docker;
-pub mod nonhlos;
 pub mod hlos;
+pub mod nonhlos;
 
-pub use hlos::{HLOSBuildExecuter, HLOSCleanExecuter};
 pub use customsubcmd::CustomSubCmdExecuter;
 pub use docker::Docker;
 pub use docker::DockerImage;
+pub use hlos::{HLOSBuildExecuter, HLOSCleanExecuter};
 pub use nonhlos::{NonHLOSBuildExecuter, NonHLOSCleanExecuter};
 
 use crate::error::BError;

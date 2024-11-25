@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use std::collections::HashMap;
 
 use crate::cli::Cli;
-use crate::commands::{YBaseCommand, YCommand, BError};
+use crate::commands::{BError, YBaseCommand, YCommand};
 use crate::data::WsContextData;
 use crate::executers::Docker;
 use crate::workspace::Workspace;
@@ -134,7 +134,7 @@ mod tests {
     use tempdir::TempDir;
 
     use crate::cli::*;
-    use crate::commands::{YCommand, UploadCommand};
+    use crate::commands::{UploadCommand, YCommand};
     use crate::error::BError;
     use crate::workspace::{Workspace, WsBuildConfigHandler, WsSettingsHandler};
 

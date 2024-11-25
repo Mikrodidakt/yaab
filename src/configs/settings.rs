@@ -326,10 +326,7 @@ mod tests {
             }
         }"#;
         let settings = Helper::setup_ws_settings(json_test_str);
-        assert_eq!(
-            &settings.docker_image,
-            "mikrodidakt/yaab/yaab-workspace"
-        );
+        assert_eq!(&settings.docker_image, "mikrodidakt/yaab/yaab-workspace");
     }
 
     #[test]
@@ -339,10 +336,7 @@ mod tests {
             "version": "5"
         }"#;
         let settings = Helper::setup_ws_settings(json_test_str);
-        assert_eq!(
-            &settings.docker_image,
-            "mikrodidakt/yaab/yaab-workspace"
-        );
+        assert_eq!(&settings.docker_image, "mikrodidakt/yaab/yaab-workspace");
     }
 
     #[test]

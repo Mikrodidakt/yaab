@@ -61,11 +61,7 @@ impl WsTaskHandler {
 
         match self.data.ttype() {
             TType::QSSI | TType::KERNEL | TType::VENDOR | TType::AOSP | TType::HLOS => {
-                executer = Box::new(HLOSBuildExecuter::new(
-                    cli,
-                    &self.data,
-                    bb_variables,
-                ));
+                executer = Box::new(HLOSBuildExecuter::new(cli, &self.data, bb_variables));
             }
             TType::NONHLOS => {
                 executer = Box::new(NonHLOSBuildExecuter::new(cli, &self.data));

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use crate::cli::Cli;
-use crate::commands::{YBaseCommand, YCommand, BError};
+use crate::commands::{BError, YBaseCommand, YCommand};
 use crate::executers::{Docker, DockerImage};
 use crate::workspace::Workspace;
 
@@ -242,9 +242,9 @@ impl ShellCommand {
         /* Sourcing the init env file and returning all the env variables available including from the shell */
         cli.info(format!("source init env file {}", init_env.display()));
         let mut env: HashMap<String, String> = HashMap::new(); /* = cli.source_init_env(
-            &init_env,
-            &workspace.settings().work_dir(),
-        )?;*/
+                                                                   &init_env,
+                                                                   &workspace.settings().work_dir(),
+                                                               )?;*/
 
         /*
         /* Process the env variables from the cli */
@@ -320,7 +320,8 @@ impl ShellCommand {
         /*
          * The command don't have to be a bitbake command but we will setup the bb env anyway
          */
-        let env: HashMap<String, String> = self.hlos_build_env(cli, workspace, args_env_variables)?;
+        let env: HashMap<String, String> =
+            self.hlos_build_env(cli, workspace, args_env_variables)?;
         cli.info(format!("Running command '{}'", cmd));
         if !docker.is_empty() {
             let image: DockerImage = DockerImage::new(&docker)?;

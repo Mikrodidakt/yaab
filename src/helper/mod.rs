@@ -367,11 +367,7 @@ impl Helper {
                 Helper::env_home()
             ),
             String::from("-v"),
-            format!(
-                "{}/.yaab:{}/.yaab",
-                Helper::env_home(),
-                Helper::env_home()
-            ),
+            format!("{}/.yaab:{}/.yaab", Helper::env_home(), Helper::env_home()),
             String::from("-v"),
             String::from("/var/run/docker.sock:/var/run/docker.sock"),
             String::from("-u"),

@@ -37,7 +37,7 @@ impl CmdHandler {
 
 #[cfg(test)]
 mod tests {
-    use crate::commands::{YCommand, CmdHandler};
+    use crate::commands::{CmdHandler, YCommand};
     use crate::error::BError;
 
     #[test]
