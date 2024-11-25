@@ -11,6 +11,7 @@ The build config is what describes building the product for yaab. A typical buil
         "project": "",
         "description": "",
         "arch": "",
+        "initenv": "",
         "context": [
         ],
         "include": [
@@ -21,6 +22,7 @@ The build config is what describes building the product for yaab. A typical buil
                         "name": "task",
                         "type": "non-hlos|qssi|vendor|kernel",
                         "initenv": "",
+                        "description": "",
                         "disabled": "true|false",
                         "condition": "true|false",
                         "builddir": "",
