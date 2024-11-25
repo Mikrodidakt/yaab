@@ -22,7 +22,7 @@ impl WsConfigData {
         // Duplication from WsProductData which is also keeping track of the name
         // for now leave it but should potentially move it
         let name: String = Self::get_str_value("name", &data, Some(String::from("NA")))?;
-        let init_env: String = Self::get_str_value("initenv", &data, None)?;
+        let init_env: String = Self::get_str_value("initenv", &data, Some(String::from("NA")))?;
 
         Ok(WsConfigData { version, name, init_env })
     }
