@@ -181,7 +181,11 @@ impl WsBuildData {
         self.config.version()
     }
 
-    pub fn init_env(&self) -> PathBuf {
+    pub fn init_env_file(&self) -> PathBuf {
+        if self.config.init_env() == "NA" {
+            return PathBuf::from("");
+        }
+
         self.settings
             .work_dir()
             .clone()
@@ -207,7 +211,7 @@ impl WsBuildData {
     }
 
     pub fn expand_ctx(&mut self) -> Result<(), BError> {
-        self.config.expand_ctx(self.context.ctx());
+        self.config.expand_ctx(self.context.ctx())?;
         //self.product.expand_ctx(self.context.ctx());
         //self.bitbake.expand_ctx(self.context.ctx())?;
         Ok(())
@@ -237,6 +241,7 @@ mod tests {
         let data: WsBuildData = Helper::setup_build_data(&work_dir, None, None);
         assert_eq!(data.version(), "5");
         assert_eq!(data.name(), "NA");
+        assert_eq!(data.init_env_file(), PathBuf::from(""));
     }
 
     #[test]

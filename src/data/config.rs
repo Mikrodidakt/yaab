@@ -64,6 +64,7 @@ mod tests {
             WsConfigData::from_str(json_build_config).expect("Failed to parse config data");
         assert_eq!(data.version(), "5");
         assert_eq!(data.name(), "NA");
+        assert_eq!(data.init_env(), "NA");
     }
 
     #[test]

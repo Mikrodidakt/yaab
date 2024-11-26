@@ -5,6 +5,7 @@ use crate::cli::Cli;
 use crate::commands::{BError, YBaseCommand, YCommand};
 use crate::executers::{Docker, DockerImage};
 use crate::workspace::Workspace;
+use crate::data::TType;
 
 static YCOMMAND: &str = "shell";
 static YCOMMAND_ABOUT: &str =
@@ -121,7 +122,7 @@ impl YCommand for ShellCommand {
         workspace.expand_ctx()?;
 
         if cmd.is_empty() {
-            return self.run_hlos_shell(cli, workspace, &self.setup_env(env), &docker);
+            return self.run_aosp_shell(cli, workspace, &self.setup_env(env), &docker);
         }
 
         self.run_cmd(&cmd, cli, workspace, &self.setup_env(env), &docker)
@@ -168,9 +169,9 @@ impl ShellCommand {
                 .short('t')
                 .long("env-type")
                 .value_name("env_type")
-                .default_value("default")
-                .value_parser(["default", "vendor", "qssi", "kernel"])
-                .help("Specify the build environemt type it can be one of default, kernel, vendor, qssi. This will define what build env that should be sourced into the shell. Will be available as a context variable ENV_TYPE."),
+                .default_value("aosp")
+                .value_parser(["aosp", "vendor", "qssi", "kernel"])
+                .help("Specify the build environemt type it can be one of aosp, kernel, vendor, qssi. This will define what build env that should be sourced into the shell. Will be available as a context variable ENV_TYPE."),
         )
         .arg(
             clap::Arg::new("env")
@@ -225,43 +226,51 @@ impl ShellCommand {
         variables
     }
 
-    fn hlos_build_env(
+    fn aosp_build_env(
         &self,
         cli: &Cli,
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
+        ttype: &TType
     ) -> Result<HashMap<String, String>, BError> {
-        let init_env: PathBuf = PathBuf::from(""); //= workspace.config().build_data().init_env_file();
+        let result: Result<PathBuf, BError> = workspace.config().init_env(ttype);
+        let init_env_file: PathBuf;
+        let mut env: HashMap<String, String>;
+        match result {
+            Ok(init_env) => {
+                init_env_file = init_env;
+            }
+            Err(e) => {
+                init_env_file = PathBuf::from("");
+            }
+        }
 
-        /*
-         * Env variables priority are
-         * 1. Cli env variables
-         * 2. System env variables
-         */
+        if init_env_file.as_os_str().is_empty() {
+            cli.info(String::from("no init env file specified skipping sourcing env!"));
+            env = HashMap::new();
+        } else {
+            /*
+             * Env variables priority are
+             * 1. Cli env variables
+            * 2. System env variables
+            */
 
-        /* Sourcing the init env file and returning all the env variables available including from the shell */
-        cli.info(format!("source init env file {}", init_env.display()));
-        let mut env: HashMap<String, String> = HashMap::new(); /* = cli.source_init_env(
-                                                                   &init_env,
-                                                                   &workspace.settings().work_dir(),
-                                                               )?;*/
+            /* Sourcing the init env file and returning all the env variables available including from the shell */
+            cli.info(format!("source init env file '{}'", init_env_file.display()));
+            env = cli.source_init_env(&init_env_file, &workspace.settings().work_dir())?;
+        }
 
-        /*
         /* Process the env variables from the cli */
         args_env_variables.iter().for_each(|(key, value)| {
             env.insert(key.clone(), value.clone());
-            /*
-             * Any variable comming from the cli should not by default be added to the passthrough
-             * list. The only way to get it through is if this variable is already defined as part
-             * of the task build config env
-             */
         });
-        */
+
+
 
         Ok(env)
     }
 
-    pub fn run_hlos_shell(
+    pub fn run_aosp_shell(
         &self,
         cli: &Cli,
         workspace: &Workspace,
@@ -271,7 +280,7 @@ impl ShellCommand {
         let cmd_line: Vec<String> = vec![String::from("/bin/bash"), String::from("-i")];
 
         let mut env: HashMap<String, String> =
-            self.hlos_build_env(cli, workspace, args_env_variables)?;
+            self.aosp_build_env(cli, workspace, args_env_variables, &TType::AOSP)?;
         /*
          * Set the YAAB_CURRENT_BUILD_CONFIG and YAAB_WORKSPACE env variable used by the aliases in
          * /etc/yaab/yaab.bashrc which is sourced by /etc/bash.bashrc when running an interactive
@@ -318,10 +327,10 @@ impl ShellCommand {
         ];
 
         /*
-         * The command don't have to be a bitbake command but we will setup the bb env anyway
+         * The command don't have to be a AOSP command but we will setup the android env anyway
          */
         let env: HashMap<String, String> =
-            self.hlos_build_env(cli, workspace, args_env_variables)?;
+            self.aosp_build_env(cli, workspace, args_env_variables, &TType::AOSP)?;
         cli.info(format!("Running command '{}'", cmd));
         if !docker.is_empty() {
             let image: DockerImage = DockerImage::new(&docker)?;

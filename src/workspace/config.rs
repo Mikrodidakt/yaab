@@ -84,7 +84,7 @@ impl WsBuildConfigHandler {
          * projects.
          */
         if ttype == &TType::AOSP {
-            return Ok(self.data.init_env());
+            return Ok(self.data.init_env_file());
         }
 
         for (_name, task) in self.tasks.iter() {
