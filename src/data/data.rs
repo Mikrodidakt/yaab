@@ -75,7 +75,7 @@ impl WsBuildData {
 
         context.update(&ctx_built_in_variables);
         // Update the "built-in" bitbake paths in the context variables
-        let bb_build_dir: PathBuf = settings
+        /*let bb_build_dir: PathBuf = settings
             .builds_dir()
             .clone()
             .join(PathBuf::from(product.name().to_string()));
@@ -83,6 +83,7 @@ impl WsBuildData {
             context::CTX_KEY_BB_BUILD_DIR.to_string() => bb_build_dir.to_string_lossy().to_string(),
         };
         context.update(&ctx_bitbake_variables);
+        */
 
         Ok(WsBuildData {
             data: data.to_owned(),
@@ -180,6 +181,13 @@ impl WsBuildData {
         self.config.version()
     }
 
+    pub fn init_env(&self) -> PathBuf {
+        self.settings
+            .work_dir()
+            .clone()
+            .join(self.config.init_env())
+    }
+
     pub fn valid(&self) -> bool {
         return self.config.version() != "NA"
             && self.product().name() != "NA"
@@ -199,7 +207,7 @@ impl WsBuildData {
     }
 
     pub fn expand_ctx(&mut self) -> Result<(), BError> {
-        //self.config.expand_ctx(self.context.ctx());
+        self.config.expand_ctx(self.context.ctx());
         //self.product.expand_ctx(self.context.ctx());
         //self.bitbake.expand_ctx(self.context.ctx())?;
         Ok(())
@@ -210,7 +218,6 @@ impl WsBuildData {
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
     use chrono;
@@ -218,7 +225,7 @@ mod tests {
     use serde_json::Value;
     use std::path::PathBuf;
 
-    use crate::data::{AType, WsBitbakeData, WsBuildData};
+    use crate::data::{AType, WsBuildData};
     use crate::error::BError;
     use crate::fs::ConfigFileReader;
     use crate::helper::Helper;
@@ -284,10 +291,8 @@ mod tests {
         {
             "index": "2",
             "name": "task-name",
-            "type": "bitbake",
-            "recipes": [
-                "test-image"
-            ]
+            "type": "aosp",
+            "builddir": "builds/test-name"
         }"#;
         let json_build_config: &str = r#"
         {
@@ -308,6 +313,7 @@ mod tests {
         assert_eq!(task.data().name(), "task-name");
     }
 
+    /*
     #[test]
     fn test_ws_build_data_task_expand_ctx() {
         let json_task_str: &str = r#"
@@ -336,7 +342,7 @@ mod tests {
         let mut task: WsTaskHandler = data.get_task(&json_data).expect("Failed to parse task");
         task.expand_ctx(data.context().ctx()).unwrap();
         assert_eq!(task.data().recipes(), &vec!["test-image"]);
-    }
+    }*/
 
     #[test]
     fn test_ws_build_tasks() {
@@ -350,12 +356,12 @@ mod tests {
                 "task1": {
                     "index": "1",
                     "name": "task1",
-                    "type": "non-bitbake"
+                    "type": "non-hlos"
                 },
                 "task2": {
                     "index": "2",
                     "name": "task2",
-                    "type": "non-bitbake"
+                    "type": "non-hlos"
                 }
             }
         }"#;
@@ -382,7 +388,7 @@ mod tests {
         {
             "index": "2",
             "name": "task2",
-            "type": "non-bitbake",
+            "type": "non-hlos",
             "artifacts": "error"
         }"#;
         let data: WsBuildData = Helper::setup_build_data(&work_dir, None, None);
@@ -530,6 +536,7 @@ mod tests {
         });
     }
 
+    /*
     #[test]
     fn test_ws_build_data_built_in_ctx() {
         let json_task_str: &str = r#"
@@ -582,5 +589,5 @@ mod tests {
             PathBuf::from("/workspace/layers/meta-test/oe-my-init-env")
         );
     }
+    */
 }
-*/

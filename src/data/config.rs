@@ -1,6 +1,7 @@
 use serde_json::Value;
 
 use crate::configs::Config;
+use crate::configs::Context;
 use crate::error::BError;
 
 pub struct WsConfigData {
@@ -41,6 +42,11 @@ impl WsConfigData {
 
     pub fn init_env(&self) -> &str {
         &self.init_env
+    }
+
+    pub fn expand_ctx(&mut self, ctx: &Context) -> Result<(), BError> {
+        self.init_env = ctx.expand_str(&self.init_env)?;
+        Ok(())
     }
 }
 

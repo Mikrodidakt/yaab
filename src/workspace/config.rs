@@ -1,8 +1,10 @@
+use std::path::PathBuf;
+
 use indexmap::IndexMap;
 use serde_json::Value;
 
 use crate::configs::Context;
-use crate::data::{WsBuildData, WsContextData};
+use crate::data::{TType, WsBuildData};
 use crate::error::BError;
 use crate::fs::ConfigFileReader;
 use crate::workspace::{WsCustomSubCmdHandler, WsSettingsHandler, WsTaskHandler};
@@ -74,7 +76,27 @@ impl WsBuildConfigHandler {
         }
     }
 
-    pub fn subcmd(&self, cmd: &str) -> Result<&WsCustomSubCmdHandler, BError> {
+    pub fn init_env(&self, ttype: &TType) -> Result<PathBuf, BError> {
+        /*
+         * If the task type is AOSP we assume the default initenv should
+         * be used. AOSP type is the default so unless specified this will
+         * be used. The QSSI, VENDOR, KERNEL and HLOS is mostly for QC
+         * projects.
+         */
+        if ttype == &TType::AOSP {
+            return Ok(self.data.init_env());
+        }
+
+        for (_name, task) in self.tasks.iter() {
+            if task.data().ttype() == ttype {
+                return Ok(task.data().init_env().clone());
+            }
+        }
+
+        return Err(BError::ValueError(format!("No '{:?}' task defined", ttype)));
+    }
+
+    pub fn sub_cmd(&self, cmd: &str) -> Result<&WsCustomSubCmdHandler, BError> {
         match self.subcmds.get(cmd) {
             Some(config) => {
                 return Ok(config);
@@ -130,31 +152,31 @@ impl WsBuildConfigHandler {
         &self.tasks
     }
 
-    pub fn subcmds(&self) -> &IndexMap<String, WsCustomSubCmdHandler> {
+    pub fn sub_cmds(&self) -> &IndexMap<String, WsCustomSubCmdHandler> {
         &self.subcmds
     }
 
     pub fn deploy(&self) -> &WsCustomSubCmdHandler {
         &self
-            .subcmd("deploy")
+            .sub_cmd("deploy")
             .expect("Failed to get deploy built-in sub-command")
     }
 
     pub fn upload(&self) -> &WsCustomSubCmdHandler {
         &self
-            .subcmd("upload")
+            .sub_cmd("upload")
             .expect("Failed to get upload built-in sub-command")
     }
 
     pub fn setup(&self) -> &WsCustomSubCmdHandler {
         &self
-            .subcmd("setup")
+            .sub_cmd("setup")
             .expect("Failed to get setup built-in sub-command")
     }
 
     pub fn sync(&self) -> &WsCustomSubCmdHandler {
         &self
-            .subcmd("sync")
+            .sub_cmd("sync")
             .expect("Failed to get sync built-in sub-command")
     }
 
@@ -167,148 +189,15 @@ impl WsBuildConfigHandler {
     //}
 }
 
-/*
-
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
 
+    use crate::data::TType;
     use crate::error::BError;
     use crate::workspace::{
         WsBuildConfigHandler, WsCustomSubCmdHandler, WsSettingsHandler, WsTaskHandler,
     };
-
-    #[test]
-    fn test_ws_config_default() {
-        let json_settings = r#"
-        {
-            "version": "4"
-        }"#;
-        let json_build_config = r#"
-        {
-            "version": "5",
-            "name": "test-name",
-            "description": "Test Description",
-            "arch": "test-arch"
-        }"#;
-        let work_dir: PathBuf = PathBuf::from("/workspace");
-        let mut ws_settings: WsSettingsHandler =
-            WsSettingsHandler::from_str(&work_dir, json_settings).unwrap();
-        let ws_config: WsBuildConfigHandler =
-            WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
-                .expect("Failed to parse build config");
-        assert_eq!(ws_config.build_data().version(), "5".to_string());
-        assert_eq!(ws_config.build_data().name(), "test-name".to_string());
-        assert_eq!(
-            ws_config.build_data().product().name(),
-            "test-name".to_string()
-        );
-        assert_eq!(
-            ws_config.build_data().product().arch(),
-            "test-arch".to_string()
-        );
-        assert_eq!(
-            ws_config.build_data().product().description(),
-            "Test Description".to_string()
-        );
-        assert_eq!(ws_config.build_data().bitbake().distro(), "NA".to_string());
-        assert_eq!(ws_config.build_data().bitbake().machine(), "NA".to_string());
-        assert_eq!(
-            ws_config.build_data().bitbake().build_dir(),
-            PathBuf::from("/workspace/builds/test-name")
-        );
-        assert_eq!(
-            ws_config.build_data().bitbake().build_config_dir(),
-            PathBuf::from("/workspace/builds/test-name/conf")
-        );
-        assert_eq!(
-            ws_config.build_data().bitbake().deploy_dir(),
-            PathBuf::from("/workspace/builds/test-name/tmp/deploy/images")
-        );
-        assert_eq!(
-            ws_config.build_data().bitbake().dl_dir(),
-            PathBuf::from("/workspace/.cache/download")
-        );
-        assert_eq!(
-            ws_config.build_data().bitbake().sstate_dir(),
-            PathBuf::from("/workspace/.cache/test-arch/sstate-cache")
-        );
-        assert_eq!(
-            ws_config.build_data().bitbake().bblayers_conf_path(),
-            PathBuf::from("/workspace/builds/test-name/conf/bblayers.conf")
-        );
-        assert!(ws_config.build_data().bitbake().bblayers_conf().is_empty());
-        assert_eq!(
-            ws_config.build_data().bitbake().local_conf_path(),
-            PathBuf::from("/workspace/builds/test-name/conf/local.conf")
-        );
-        assert!(!ws_config.build_data().bitbake().local_conf().is_empty());
-        let mut conf_str: String = String::new();
-        conf_str.push_str(&format!(
-            "MACHINE ?= \"{}\"\n",
-            ws_config.build_data().bitbake().machine()
-        ));
-        conf_str.push_str(&format!(
-            "PRODUCT_NAME ?= \"{}\"\n",
-            ws_config.build_data().product().name()
-        ));
-        conf_str.push_str(&format!(
-            "DISTRO ?= \"{}\"\n",
-            ws_config.build_data().bitbake().distro()
-        ));
-        conf_str.push_str(&format!(
-            "SSTATE_DIR ?= \"{}\"\n",
-            ws_config
-                .build_data()
-                .bitbake()
-                .sstate_dir()
-                .to_str()
-                .unwrap()
-        ));
-        conf_str.push_str(&format!(
-            "DL_DIR ?= \"{}\"\n",
-            ws_config.build_data().bitbake().dl_dir().to_str().unwrap()
-        ));
-        assert_eq!(ws_config.build_data().bitbake().local_conf(), conf_str);
-        assert_eq!(
-            ws_config.build_data().bitbake().docker_image(),
-            "NA".to_string()
-        );
-    }
-
-    #[test]
-    fn test_ws_config_context_docker() {
-        let json_settings = r#"
-        {
-            "version": "4"
-        }"#;
-        let json_build_config = r#"
-        {
-            "version": "5",
-            "name": "test-name",
-            "description": "Test Description",
-            "arch": "test-arch",
-            "context": [
-                "DOCKER_REGISTRY=test-registry",
-                "DOCKER_TAG=0.1",
-                "DOCKER_IMAGE=test-image"
-            ],
-            "bb": {
-                "docker": "$#[DOCKER_REGISTRY]/$#[DOCKER_IMAGE]:$#[DOCKER_TAG]"
-            }
-        }"#;
-        let work_dir: PathBuf = PathBuf::from("/workspace");
-        let mut ws_settings: WsSettingsHandler =
-            WsSettingsHandler::from_str(&work_dir, json_settings).unwrap();
-        let mut ws_config: WsBuildConfigHandler =
-            WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
-                .expect("Failed to parse build config");
-        ws_config.expand_ctx().unwrap();
-        assert_eq!(
-            ws_config.build_data().bitbake().docker_image(),
-            "test-registry/test-image:0.1"
-        );
-    }
 
     #[test]
     fn test_ws_config_empty_tasks() {
@@ -330,6 +219,177 @@ mod tests {
             WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
                 .expect("Failed to parse build config");
         assert!(ws_config.tasks().is_empty());
+    }
+
+    #[test]
+    fn test_ws_config_invalid_init_env_task_type() {
+        let json_settings = r#"
+        {
+            "version": "4"
+        }"#;
+        let json_build_config = r#"
+        {
+            "version": "5",
+            "name": "test-name",
+            "description": "Test Description",
+            "arch": "test-arch",
+            "tasks": {
+                "task1": {
+                    "index": "1",
+                    "name": "task1",
+                    "type": "non-hlos",
+                    "builddir": "$#[TASK1_BUILD_DIR]/dir/"
+                }
+            }
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let mut ws_settings: WsSettingsHandler =
+            WsSettingsHandler::from_str(&work_dir, json_settings).unwrap();
+        let ws_config: WsBuildConfigHandler =
+            WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
+                .expect("Failed to parse build config");
+        {
+            let result: Result<PathBuf, BError> = ws_config.init_env(&TType::QSSI);
+            match result {
+                Ok(_task) => {
+                    panic!("We should have recived an error because we have no qssi task defined!");
+                }
+                Err(e) => {
+                    assert_eq!(e.to_string(), "No 'QSSI' task defined".to_string());
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_ws_config_init_env_aosp() {
+        let json_settings = r#"
+        {
+            "version": "4"
+        }"#;
+        let json_build_config = r#"
+        {
+            "version": "5",
+            "name": "test-name",
+            "description": "Test Description",
+            "arch": "test-arch",
+            "initenv": "aosp/build/setupenv.sh",
+            "tasks": {
+                "task1": {
+                    "index": "1",
+                    "name": "task1",
+                    "type": "qssi",
+                    "initenv": "build/setupenv.sh",
+                    "builddir": "qssi/builddir/"
+                }
+            }
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let mut ws_settings: WsSettingsHandler =
+            WsSettingsHandler::from_str(&work_dir, json_settings).unwrap();
+        let ws_config: WsBuildConfigHandler =
+            WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
+                .expect("Failed to parse build config");
+        {
+            let init_env: PathBuf = ws_config
+                .init_env(&TType::AOSP)
+                .expect("Failed to read out qssi initenv!");
+            assert_eq!(init_env, PathBuf::from("/workspace/aosp/build/setupenv.sh"));
+        }
+    }
+
+    #[test]
+    fn test_ws_config_init_env_qssi() {
+        let json_settings = r#"
+        {
+            "version": "4"
+        }"#;
+        let json_build_config = r#"
+        {
+            "version": "5",
+            "name": "test-name",
+            "description": "Test Description",
+            "arch": "test-arch",
+            "initenv": "aosp/build/setupenv.sh",
+            "tasks": {
+                "task1": {
+                    "index": "0",
+                    "name": "task1",
+                    "type": "qssi",
+                    "initenv": "build/setupenv.sh",
+                    "builddir": "qssi/builddir/"
+                },
+                "task2": {
+                    "index": "1",
+                    "name": "task1",
+                    "type": "vendor",
+                    "initenv": "build/setupenv.sh",
+                    "builddir": "vendor/builddir/"
+                }
+            }
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let mut ws_settings: WsSettingsHandler =
+            WsSettingsHandler::from_str(&work_dir, json_settings).unwrap();
+        let ws_config: WsBuildConfigHandler =
+            WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
+                .expect("Failed to parse build config");
+        {
+            let init_env: PathBuf = ws_config
+                .init_env(&TType::QSSI)
+                .expect("Failed to read out qssi initenv!");
+            assert_eq!(
+                init_env,
+                PathBuf::from("/workspace/qssi/builddir/build/setupenv.sh")
+            );
+        }
+    }
+
+    #[test]
+    fn test_ws_config_init_env_vendor() {
+        let json_settings = r#"
+        {
+            "version": "4"
+        }"#;
+        let json_build_config = r#"
+        {
+            "version": "5",
+            "name": "test-name",
+            "description": "Test Description",
+            "arch": "test-arch",
+            "initenv": "aosp/build/setupenv.sh",
+            "tasks": {
+                "task1": {
+                    "index": "0",
+                    "name": "task1",
+                    "type": "qssi",
+                    "initenv": "build/setupenv.sh",
+                    "builddir": "qssi/builddir/"
+                },
+                "task2": {
+                    "index": "1",
+                    "name": "task1",
+                    "type": "vendor",
+                    "initenv": "build/setupenv.sh",
+                    "builddir": "vendor/builddir/"
+                }
+            }
+        }"#;
+        let work_dir: PathBuf = PathBuf::from("/workspace");
+        let mut ws_settings: WsSettingsHandler =
+            WsSettingsHandler::from_str(&work_dir, json_settings).unwrap();
+        let ws_config: WsBuildConfigHandler =
+            WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
+                .expect("Failed to parse build config");
+        {
+            let init_env: PathBuf = ws_config
+                .init_env(&TType::VENDOR)
+                .expect("Failed to read out vendor initenv!");
+            assert_eq!(
+                init_env,
+                PathBuf::from("/workspace/vendor/builddir/build/setupenv.sh")
+            );
+        }
     }
 
     #[test]
@@ -359,55 +419,55 @@ mod tests {
                 "task1": {
                     "index": "1",
                     "name": "task1",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK1_CONDITION]"
                 },
                 "task2": {
                     "index": "2",
                     "name": "task2",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK2_CONDITION]"
                 },
                 "task3": {
                     "index": "3",
                     "name": "task3",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK3_CONDITION]"
                 },
                 "task4": {
                     "index": "4",
                     "name": "task4",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK4_CONDITION]"
                 },
                 "task5": {
                     "index": "5",
                     "name": "task5",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK5_CONDITION]"
                 },
                 "task6": {
                     "index": "6",
                     "name": "task6",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK6_CONDITION]"
                 },
                 "task7": {
                     "index": "7",
                     "name": "task7",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK7_CONDITION]"
                 },
                 "task8": {
                     "index": "8",
                     "name": "task8",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK8_CONDITION]"
                 },
                 "task9": {
                     "index": "9",
                     "name": "task9",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "condition": "$#[TASK8_CONDITION]"
                 }
             }
@@ -449,22 +509,22 @@ mod tests {
             "description": "Test Description",
             "arch": "test-arch",
             "context": [
-                "TASK1_BUILD_DIR=task1/build"
+                "TASK1_BUILD_DIR=task1/build",
+                "TASK2_BUILD_DIR=task2/build"
             ],
             "tasks": {
                 "task1": {
                     "index": "1",
                     "name": "task1",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "$#[TASK1_BUILD_DIR]/dir/"
                 },
                 "task2": {
                     "index": "2",
                     "name": "task2",
-                    "type": "bitbake",
-                    "recipes": [
-                        "test-image"
-                    ]
+                    "type": "hlos",
+                    "initenv": "builds/envsetup.sh",
+                    "builddir": "$#[TASK2_BUILD_DIR]/dir/" 
                 }
             }
         }"#;
@@ -481,12 +541,12 @@ mod tests {
         );
         assert_eq!(
             ws_config.task("task2").unwrap().data().build_dir(),
-            &PathBuf::from("/workspace/builds/test-name")
+            &PathBuf::from("/workspace/task2/build/dir")
         );
     }
 
     #[test]
-    fn test_ws_config_context_task_build_dir() {
+    fn test_ws_config_invalid_task() {
         let json_settings = r#"
         {
             "version": "4"
@@ -498,13 +558,14 @@ mod tests {
             "description": "Test Description",
             "arch": "test-arch",
             "context": [
-                "TASK1_BUILD_DIR=task1/build/dir"
+                "TASK1_BUILD_DIR=task1/build/dir",
+                "TASK2_BUILD_DIR=task2/build/dir"
             ],
             "tasks": {
                 "task1": {
                     "index": "0",
                     "name": "task1-name",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/$#[TASK1_BUILD_DIR]",
                     "build": "build-cmd",
                     "clean": "clean-cmd",
@@ -513,10 +574,10 @@ mod tests {
                 "task2": {
                     "index": "1",
                     "name": "task2-name",
-                    "type": "bitbake",
-                    "recipes": [
-                        "image-recipe"
-                    ],
+                    "type": "non-hlos",
+                    "builddir": "test/$#[TASK2_BUILD_DIR]",
+                    "build": "build-cmd",
+                    "clean": "clean-cmd",
                     "artifacts": []
                 }
             }
@@ -534,7 +595,7 @@ mod tests {
         );
         assert_eq!(
             ws_config.task("task2").unwrap().data().build_dir(),
-            &PathBuf::from("/workspace/builds/test-name")
+            &PathBuf::from("/workspace/test/task2/build/dir")
         );
         {
             let result: Result<&WsTaskHandler, BError> = ws_config.task("task3");
@@ -568,7 +629,7 @@ mod tests {
                 "task0": {
                     "index": "0",
                     "name": "task0",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/task0",
                     "build": "cmd0",
                     "clean": "clean0",
@@ -581,7 +642,7 @@ mod tests {
                 "task1": {
                     "index": "1",
                     "name": "task1",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/task1",
                     "build": "cmd1",
                     "clean": "clean1",
@@ -594,7 +655,7 @@ mod tests {
                 "task2": {
                     "index": "2",
                     "name": "task2",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/task2",
                     "build": "cmd2",
                     "clean": "clean2",
@@ -662,7 +723,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ws_config_merge() {
+    fn test_ws_config_include() {
         let json_settings = r#"
         {
             "version": "4"
@@ -677,7 +738,7 @@ mod tests {
                 "task0": {
                     "index": "0",
                     "name": "task0",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/main",
                     "build": "main",
                     "clean": "main",
@@ -699,7 +760,7 @@ mod tests {
                 "task0": {
                     "index": "0",
                     "name": "task0",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/config1",
                     "build": "config1",
                     "clean": "config1",
@@ -712,7 +773,7 @@ mod tests {
                 "task1": {
                     "index": "1",
                     "name": "task1",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/config1",
                     "build": "config1",
                     "clean": "config1",
@@ -737,7 +798,7 @@ mod tests {
                 "task2": {
                     "index": "2",
                     "name": "task2",
-                    "type": "non-bitbake",
+                    "type": "non-hlos",
                     "builddir": "test/config2",
                     "build": "config2",
                     "clean": "config2",
@@ -772,12 +833,11 @@ mod tests {
         assert_eq!(t1.data().build_cmd(), "config1");
         let t2: &WsTaskHandler = ws_main_config.tasks().get("task2").unwrap();
         assert_eq!(t2.data().build_cmd(), "config2");
-        let setup: &WsCustomSubCmdHandler = ws_main_config.subcmds().get("setup").unwrap();
+        let setup: &WsCustomSubCmdHandler = ws_main_config.sub_cmds().get("setup").unwrap();
         assert_eq!(setup.data().cmd(), "main");
-        let sync: &WsCustomSubCmdHandler = ws_main_config.subcmds().get("sync").unwrap();
+        let sync: &WsCustomSubCmdHandler = ws_main_config.sub_cmds().get("sync").unwrap();
         assert_eq!(sync.data().cmd(), "config1");
-        let upload: &WsCustomSubCmdHandler = ws_main_config.subcmds().get("upload").unwrap();
+        let upload: &WsCustomSubCmdHandler = ws_main_config.sub_cmds().get("upload").unwrap();
         assert_eq!(upload.data().cmd(), "config2");
     }
 }
-*/
