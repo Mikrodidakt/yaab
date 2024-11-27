@@ -3,9 +3,9 @@ use std::path::PathBuf;
 
 use crate::cli::Cli;
 use crate::commands::{BError, YBaseCommand, YCommand};
+use crate::data::TType;
 use crate::executers::{Docker, DockerImage};
 use crate::workspace::Workspace;
-use crate::data::TType;
 
 static YCOMMAND: &str = "shell";
 static YCOMMAND_ABOUT: &str =
@@ -231,7 +231,7 @@ impl ShellCommand {
         cli: &Cli,
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
-        ttype: &TType
+        ttype: &TType,
     ) -> Result<HashMap<String, String>, BError> {
         let result: Result<PathBuf, BError> = workspace.config().init_env(ttype);
         let init_env_file: PathBuf;
@@ -246,17 +246,22 @@ impl ShellCommand {
         }
 
         if init_env_file.as_os_str().is_empty() {
-            cli.info(String::from("no init env file specified skipping sourcing env!"));
+            cli.info(String::from(
+                "no init env file specified skipping sourcing env!",
+            ));
             env = HashMap::new();
         } else {
             /*
              * Env variables priority are
              * 1. Cli env variables
-            * 2. System env variables
-            */
+             * 2. System env variables
+             */
 
             /* Sourcing the init env file and returning all the env variables available including from the shell */
-            cli.info(format!("source init env file '{}'", init_env_file.display()));
+            cli.info(format!(
+                "source init env file '{}'",
+                init_env_file.display()
+            ));
             env = cli.source_init_env(&init_env_file, &workspace.settings().work_dir())?;
         }
 
@@ -264,8 +269,6 @@ impl ShellCommand {
         args_env_variables.iter().for_each(|(key, value)| {
             env.insert(key.clone(), value.clone());
         });
-
-
 
         Ok(env)
     }
