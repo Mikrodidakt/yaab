@@ -62,6 +62,7 @@ pub trait YCommand {
         let env: HashMap<String, String> = cli.env();
 
         cli.info(format!("Bootstrap yaab into '{}'", docker.image()));
+        cli.debug(format!("env: {:?}", env));
 
         if !PathBuf::from("/usr/bin/docker").exists() {
             return Err(BError::DockerError());
