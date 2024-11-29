@@ -84,10 +84,6 @@ impl WsSettingsHandler {
         self.append_dir(&self.ws_settings.artifacts_dir)
     }
 
-    pub fn layers_dir(&self) -> PathBuf {
-        self.append_dir(&self.ws_settings.layers_dir)
-    }
-
     pub fn configs_dir(&self) -> PathBuf {
         self.append_dir(&self.ws_settings.configs_dir)
     }
@@ -163,7 +159,6 @@ mod tests {
             settings.artifacts_dir(),
             PathBuf::from("/workspace/artifacts")
         );
-        assert_eq!(settings.layers_dir(), PathBuf::from("/workspace/layers"));
         assert_eq!(settings.scripts_dir(), PathBuf::from("/workspace/scripts"));
         assert_eq!(settings.docker_dir(), PathBuf::from("/workspace/docker"));
         assert_eq!(settings.configs_dir(), PathBuf::from("/workspace/configs"));
@@ -203,10 +198,6 @@ mod tests {
             PathBuf::from("/workspace/artifacts_test")
         );
         assert_eq!(
-            settings.layers_dir(),
-            PathBuf::from("/workspace/layers_test")
-        );
-        assert_eq!(
             settings.scripts_dir(),
             PathBuf::from("/workspace/scripts_test")
         );
@@ -237,10 +228,6 @@ mod tests {
         let settings: WsSettingsHandler =
             WsSettingsHandler::new(work_dir, Helper::setup_ws_settings(json_test_str));
         /* Making sure the expanded path doesn't end with '/' */
-        assert_eq!(
-            settings.layers_dir().to_string_lossy(),
-            String::from("/workspace")
-        );
         assert_eq!(
             settings.work_dir().to_string_lossy(),
             String::from("/workspace")
