@@ -65,7 +65,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
 WORKDIR /yaab
-COPY ../artifacts/yaab.deb yaab.deb
+COPY artifacts/yaab.deb yaab.deb
 RUN dpkg -i yaab.deb
 
 # Setting up a yaab specific bash env pulled in by /etc/bash.bashrc 
