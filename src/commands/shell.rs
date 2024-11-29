@@ -249,7 +249,8 @@ impl ShellCommand {
             cli.info(String::from(
                 "no init env file specified skipping sourcing env!",
             ));
-            env = HashMap::new();
+            /* We still need to pull in the parent env */
+            env = cli.env();
         } else {
             /*
              * Env variables priority are
