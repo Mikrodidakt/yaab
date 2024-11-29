@@ -128,7 +128,7 @@ docker_build_image()
 
     if [ "$(docker images -q ${docker_registry}/${docker_image}:${docker_tag})" = "" ]; then
       echo "INFO: Start docker build for ${docker_registry}/${docker_image}"
-      (docker build -f $DOCKER_DIR/Dockerfile -t ${docker_registry}/${docker_image}:latest --progress=plain .)
+      (docker build -f $DOCKER_DIR/Dockerfile -t ${docker_registry}/${docker_image}:latest .)
 
       echo "INFO: Tag ${docker_image} version ${docker_tag}"
       (docker tag ${docker_registry}/${docker_image}:latest ${docker_registry}/${docker_image}:${docker_tag})
