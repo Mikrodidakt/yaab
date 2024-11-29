@@ -30,3 +30,7 @@ source "$HOME/.cargo/env"
 rustup --version
 cargo --version
 rustc --version
+
+echo "Setup musl"
+rustup target add x86_64-unknown-linux-musl
+sudo apt install musl musl-tools musl-dev
