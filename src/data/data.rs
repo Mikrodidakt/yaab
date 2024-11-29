@@ -65,7 +65,6 @@ impl WsBuildData {
             context::CTX_KEY_PRODUCT_NAME.to_string() => product.product().to_string(),
             context::CTX_KEY_PROJECT_NAME.to_string() => product.project().to_string(),
             context::CTX_KEY_ARTIFACTS_DIR.to_string() => settings.artifacts_dir().to_string_lossy().to_string(),
-            context::CTX_KEY_LAYERS_DIR.to_string() => settings.layers_dir().to_string_lossy().to_string(),
             context::CTX_KEY_SCRIPTS_DIR.to_string() => settings.scripts_dir().to_string_lossy().to_string(),
             context::CTX_KEY_BUILDS_DIR.to_string() => settings.builds_dir().to_string_lossy().to_string(),
             context::CTX_KEY_WORK_DIR.to_string() => settings.work_dir().to_string_lossy().to_string(),
