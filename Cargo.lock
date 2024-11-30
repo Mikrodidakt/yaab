@@ -1205,7 +1205,7 @@ dependencies = [
 
 [[package]]
 name = "yaab"
-version = "0.0.9"
+version = "0.0.10"
 dependencies = [
  "bzip2",
  "chrono",
