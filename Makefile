@@ -74,7 +74,7 @@ docker-shell:
 
 ## release            - Create a release build, tag and push it to github to trigger a release job
 .PHONY: release
-release: inc-version
+release: clean inc-version
 	./scripts/do_build_release.sh $(TARGET)
 	./scripts/do_deb_package.sh $(TARGET)
 	./scripts/do_release.sh
