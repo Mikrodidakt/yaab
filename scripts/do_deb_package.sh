@@ -37,5 +37,5 @@ EOT
 dpkg-deb --root-owner-group --build ${TEMP_WORK_DIR}
 
 cp ${TEMP_WORK_DIR}/../yaab.deb ${ARTIFACTS_DIR}/yaab-x86_64-${TARGET}-v${VERSION}.deb
-(cd ${ARTIFACTS_DIR}; ln -sf yaab-x86_64-${TARGET}-v${VERSION}.deb yaab.deb)
+(cd ${ARTIFACTS_DIR}; ln -sf yaab-x86_64-${TARGET}-v${VERSION}.deb yaab.deb && ln -sf yaab-x86_64-${TARGET}-v${VERSION}.deb yaab-x86_64-${TARGET}.deb)
 
