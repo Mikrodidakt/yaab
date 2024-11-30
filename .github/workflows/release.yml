@@ -96,8 +96,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/yaab-x86_64-glibc-v${{ env.CURRENT_TAG }}.deb
-        asset_name: yaab-x86_64-glibc-v${{ env.CURRENT_TAG }}.deb
+        asset_path: artifacts/yaab-x86_64-glibc-${{ env.CURRENT_TAG }}.deb
+        asset_name: yaab-x86_64-glibc-${{ env.CURRENT_TAG }}.deb
         asset_content_type: application/deb
 
     - name: Upload musl x86_64 Release
@@ -106,8 +106,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/yaab-x86_64-musl-v${{ env.CURRENT_TAG }}.deb
-        asset_name: yaab-x86_64-musl-v${{ env.CURRENT_TAG }}.deb
+        asset_path: artifacts/yaab-x86_64-musl-${{ env.CURRENT_TAG }}.deb
+        asset_name: yaab-x86_64-musl-${{ env.CURRENT_TAG }}.deb
         asset_content_type: application/deb
 
     - name: Set up Docker Buildx
