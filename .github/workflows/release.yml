@@ -36,6 +36,9 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+    - name: Setup build env
+      run: make setup-rust
+
     - name: Clean
       run: |
         make clean
@@ -60,11 +63,20 @@ jobs:
         echo 'EOF' >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Build and Tests
+    - name: Tests
       run: make test
 
-    - name: Package
-      run: make deb-package
+    - name: Build glibc x86_64 
+      run: make build-release glibc
+
+    - name: Package glibc x86_64
+      run: make deb-package glibc
+
+    - name: Build musl x86_64 
+      run: make build-release musl
+
+    - name: Package glibc x86_64
+      run: make deb-package musl
 
     - name: Create Release
       id: create_release
@@ -78,14 +90,24 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Release
+    - name: Upload glibc x86_64 Release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/yaab.deb
-        asset_name: yaab-${{ env.CURRENT_TAG }}.deb
+        asset_path: artifacts/yaab-x86_64-glibc-v${{ env.CURRENT_TAG }}.deb
+        asset_name: yaab-x86_64-glibc-v${{ env.CURRENT_TAG }}.deb
+        asset_content_type: application/deb
+
+    - name: Upload musl x86_64 Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/yaab-x86_64-musl-v${{ env.CURRENT_TAG }}.deb
+        asset_name: yaab-x86_64-musl-v${{ env.CURRENT_TAG }}.deb
         asset_content_type: application/deb
 
     - name: Set up Docker Buildx

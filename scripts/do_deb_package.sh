@@ -2,11 +2,18 @@
 #
 set -e
 
+TARGET=$1
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 . ${SCRIPT_DIR}/lib.sh
-
 VERSION=$(get_yaab_version ${WORK_DIR}/Cargo.toml)
 TEMP_WORK_DIR=$(mktemp -d --suffix=-yaab-deb)
+
+if [ ! -n "${TARGET}" ]; then
+    TARGET=glibc
+fi
+
+check_target ${TARGET}
 
 mkdir -p ${TEMP_WORK_DIR}/yaab
 TEMP_WORK_DIR=${TEMP_WORK_DIR}/yaab
@@ -29,5 +36,6 @@ EOT
 
 dpkg-deb --root-owner-group --build ${TEMP_WORK_DIR}
 
-cp ${TEMP_WORK_DIR}/../yaab.deb ${ARTIFACTS_DIR}/yaab.deb
+cp ${TEMP_WORK_DIR}/../yaab.deb ${ARTIFACTS_DIR}/yaab-x86_64-${TARGET}-v${VERSION}.deb
+(cd ${ARTIFACTS_DIR}; ln -s yaab-x86_64-${TARGET}-v${VERSION}.deb yaab.deb)
 

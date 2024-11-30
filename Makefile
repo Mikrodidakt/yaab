@@ -1,17 +1,27 @@
+## Yaab can be built using glibc or musl. Using musl means the binary will be statically
+## linked while using glibc it will be dynamically linked. Default is to build using glibc.
+##
+TARGET ?= glibc
+
 ## help               - Show this help.
 .PHONY: help
 help:
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
-## build              - Build yaab using cargo
-.PHONY: build
-build:
+## build-glibc        - Build yaab for x86_64 using glibc
+.PHONY: build-glibc
+build-glibc:
 	cargo build
 
-## build-release      - Build release using cargo
+## build-musl         - Build yaab for x86_64 using musl
+.PHONY: build-musl
+build-musl:
+	cargo build --target x86_64-unknown-linux-musl
+
+## build-release      - Build release using glibc or musl
 .PHONY: build-release
 build-release:
-	./scripts/do_build_release.sh
+	./scripts/do_build_release.sh $(TARGET)
 
 ## format             - Format the code using rustfmt
 .PHONY: format
@@ -28,15 +38,15 @@ test:
 install:
 	cargo install --path .
 
-## install-deb        - Install latest locally built yaab under /usr/bin using deb package
+## install-deb        - Install latest locally built yaab. Install it under /usr/bin using deb package
 .PHONY: install-deb
 install-deb:
 	sudo dpkg -i artifacts/yaab.deb
 
-## deb-package        - Create a debian package from the latest release build
+## deb-package        - Create a debian package from the latest release build either using glibc or using musl
 .PHONY: deb-package
 deb-package: build-release
-	./scripts/do_deb_package.sh
+	./scripts/do_deb_package.sh $(TARGET)
 
 ## inc-version        - Increment minor version
 .PHONY: inc-version
@@ -65,8 +75,8 @@ docker-shell:
 ## release            - Create a release build, tag and push it to github to trigger a release job
 .PHONY: release
 release: inc-version
-	./scripts/do_build_release.sh
-	./scripts/do_deb_package.sh
+	./scripts/do_build_release.sh $(TARGET)
+	./scripts/do_deb_package.sh $(TARGET)
 	./scripts/do_release.sh
 	git push
 	git push --tags

@@ -53,3 +53,11 @@ get_yaab_build() {
     echo NA
   fi
 }
+
+check_target() {
+  local target=$1
+  if [ "$TARGET" != "glibc" ] && [ "$TARGET" != "musl" ]; then
+    echo "ERROR: Invalid target '${target}'. Accepted values are 'glibc' or 'musl'." >&2
+    exit 1
+  fi
+}
