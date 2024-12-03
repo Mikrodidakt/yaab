@@ -72,6 +72,7 @@ impl Cli {
             cmd.push_str(c);
             cmd.push(' ');
         });
+        self.debug(format!("env: {:?}", env));
         self.debug(format!("{}", cmd.as_str().trim_end()));
         self.system.check_call(&CallParams {
             cmd_line: cmd_line.to_owned(),
