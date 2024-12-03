@@ -1,7 +1,7 @@
 ## Yaab can be built using glibc or musl. Using musl means the binary will be statically
 ## linked while using glibc it will be dynamically linked. Default is to build using glibc.
 ##
-TARGET ?= glibc
+VARIANT ?= glibc
 
 ## help               - Show this help.
 .PHONY: help
@@ -21,7 +21,7 @@ build-musl:
 ## build-release      - Build release using glibc or musl
 .PHONY: build-release
 build-release:
-	./scripts/do_build_release.sh $(TARGET)
+	./scripts/do_build_release.sh $(VARIANT)
 
 ## format             - Format the code using rustfmt
 .PHONY: format
@@ -46,7 +46,7 @@ install-deb:
 ## deb-package        - Create a debian package from the latest release build either using glibc or using musl
 .PHONY: deb-package
 deb-package: build-release
-	./scripts/do_deb_package.sh $(TARGET)
+	./scripts/do_deb_package.sh $(VARIANT)
 
 ## inc-version        - Increment minor version
 .PHONY: inc-version
@@ -75,8 +75,8 @@ docker-shell:
 ## release            - Create a release build, tag and push it to github to trigger a release job
 .PHONY: release
 release: clean inc-version
-	./scripts/do_build_release.sh $(TARGET)
-	./scripts/do_deb_package.sh $(TARGET)
+	./scripts/do_build_release.sh $(VARIANT)
+	./scripts/do_deb_package.sh $(VARIANT)
 	./scripts/do_release.sh
 	git push
 	git push --tags

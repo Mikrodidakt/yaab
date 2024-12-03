@@ -67,16 +67,16 @@ jobs:
       run: make test
 
     - name: Build glibc x86_64 
-      run: make build-release TARGET=glibc
+      run: make build-release VARIANT=glibc
 
     - name: Package glibc x86_64
-      run: make deb-package TARGET=glibc
+      run: make deb-package VARIANT=glibc
 
     - name: Build musl x86_64 
-      run: make build-release TARGET=musl
+      run: make build-release VARIANT=musl
 
     - name: Package glibc x86_64
-      run: make deb-package TARGET=musl
+      run: make deb-package VARIANT=musl
 
     - name: Create Release
       id: create_release

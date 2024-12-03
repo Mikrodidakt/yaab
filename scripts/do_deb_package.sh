@@ -2,18 +2,18 @@
 #
 set -e
 
-TARGET=$1
+VARIANT=$1
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 . ${SCRIPT_DIR}/lib.sh
 VERSION=$(get_yaab_version ${WORK_DIR}/Cargo.toml)
 TEMP_WORK_DIR=$(mktemp -d --suffix=-yaab-deb)
 
-if [ ! -n "${TARGET}" ]; then
-    TARGET=glibc
+if [ ! -n "${VARIANT}" ]; then
+    VARIANT=glibc
 fi
 
-check_target ${TARGET}
+check_variant ${VARIANT}
 
 mkdir -p ${TEMP_WORK_DIR}/yaab
 TEMP_WORK_DIR=${TEMP_WORK_DIR}/yaab
@@ -36,6 +36,6 @@ EOT
 
 dpkg-deb --root-owner-group --build ${TEMP_WORK_DIR}
 
-cp ${TEMP_WORK_DIR}/../yaab.deb ${ARTIFACTS_DIR}/yaab-x86_64-${TARGET}-v${VERSION}.deb
-(cd ${ARTIFACTS_DIR}; ln -sf yaab-x86_64-${TARGET}-v${VERSION}.deb yaab.deb && ln -sf yaab-x86_64-${TARGET}-v${VERSION}.deb yaab-x86_64-${TARGET}.deb)
+cp ${TEMP_WORK_DIR}/../yaab.deb ${ARTIFACTS_DIR}/yaab-x86_64-${VARIANT}-v${VERSION}.deb
+(cd ${ARTIFACTS_DIR}; ln -sf yaab-x86_64-${VARIANT}-v${VERSION}.deb yaab.deb && ln -sf yaab-x86_64-${VARIANT}-v${VERSION}.deb yaab-x86_64-${VARIANT}.deb)
 

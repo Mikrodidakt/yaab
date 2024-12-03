@@ -2,24 +2,24 @@
 #
 set -e
 
-TARGET=$1
+VARIANT=$1
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 . $SCRIPT_DIR/lib.sh
 VERSION=$(get_yaab_version ${WORK_DIR}/Cargo.toml)
 
-if [ ! -n "${TARGET}" ]; then
-    TARGET=glibc
+if [ ! -n "${VARIANT}" ]; then
+    VARIANT=glibc
 fi
 
-check_target ${TARGET}
+check_variant ${VARIANT}
 
-echo "INFO: build yaab v${VERSION} for ${TARGET}"
+echo "INFO: build yaab v${VERSION} for ${VARIANT}"
 
-if [ "${TARGET}" = "glibc" ]; then
+if [ "${VARIANT}" = "glibc" ]; then
     (cd ${WORK_DIR}; cargo build --release)
     cp ${WORK_DIR}/target/release/yaab ${ARTIFACTS_DIR}
-elif [ "${TARGET}" = "musl" ]; then
+elif [ "${VARIANT}" = "musl" ]; then
     (cd ${WORK_DIR}; cargo build --target x86_64-unknown-linux-musl --release)
     cp ${WORK_DIR}/target/x86_64-unknown-linux-musl/release/yaab ${ARTIFACTS_DIR}
 fi
