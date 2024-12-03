@@ -100,7 +100,7 @@ impl YCommand for BuildCommand {
             "PLATFORM_RELEASE".to_string() => format!("{}-{}", version, build_id),
         };
 
-        if variant == "eng" {
+        if variant == "user" {
             /*
              * Build commands defined in the build config needs to
              * know if it is release build or not running by including
@@ -108,7 +108,7 @@ impl YCommand for BuildCommand {
              * the build commands. We are keeping RELEASE_BUILD for
              * backwards compatibility but should be replaced with BUILD_VARIANT
              */
-            extra_ctx.insert("BUILD_VARIANT".to_string(), "eng".to_string());
+            extra_ctx.insert("BUILD_VARIANT".to_string(), "user".to_string());
             extra_ctx.insert("RELEASE_BUILD".to_string(), "1".to_string());
         }
 
