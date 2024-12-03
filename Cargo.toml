@@ -8,7 +8,6 @@ edition = "2021"
 readme = "README.md"
 repository = "https://github.com/Mikrodidakt/yaab"
 license = "Apache-2.0"
-license-file = "LICENSE"
 exclude = ["docker/", "scripts/", "Makefile", "tests/", ".*"]
 
 [[bin]]
