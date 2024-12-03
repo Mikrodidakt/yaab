@@ -9,7 +9,7 @@ set -eu
 #export RUSTUP_HOME=/usr/local/rustup
 #export CARGO_HOME=/usr/local/cargo
 #export PATH=$HOME/.cargo/bin:$PATH
-RUST_VERSION=1.83.0
+RUST_VERSION=1.81.0
 
 dpkgArch="$(dpkg --print-architecture)"
 case "${dpkgArch##*-}" in
