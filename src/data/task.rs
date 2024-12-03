@@ -111,6 +111,7 @@ impl WsTaskData {
         self.clean = ctx.expand_str(&self.clean)?;
         self.condition = ctx.expand_str(&self.condition)?;
         self.disabled = ctx.expand_str(&self.disabled)?;
+        self.description = ctx.expand_str(&self.description)?;
         for (_key, value) in self.env.iter_mut() {
             *value = ctx.expand_str(value)?;
         }
