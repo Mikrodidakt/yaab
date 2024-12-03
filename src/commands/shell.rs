@@ -49,6 +49,31 @@ impl YCommand for ShellCommand {
         let docker_pull: bool = self.get_arg_flag(cli, "docker_pull", YCOMMAND)?;
         let variant: String = self.get_arg_str(cli, "variant", YCOMMAND)?;
         let env_type: String = self.get_arg_str(cli, "env_type", YCOMMAND)?;
+        let ttype: TType;
+    
+        match env_type.as_str() {
+            "non-hlos" => {
+                ttype = TType::NONHLOS;
+            }
+            "hlos" => {
+                ttype = TType::HLOS;
+            }
+            "aosp" => {
+                ttype = TType::AOSP;
+            }
+            "kernel" => {
+                ttype = TType::KERNEL;
+            }
+            "vendor" => {
+                ttype = TType::VENDOR;
+            }
+            "qssi" => {
+                ttype = TType::QSSI;
+            }
+            _ => {
+                return Err(BError::ParseTasksError(format!("Invalid type '{}'", env_type)));
+            }
+        }
 
         /*
          * If docker is enabled in the workspace settings then yaab will be bootstraped into a docker container
@@ -109,7 +134,7 @@ impl YCommand for ShellCommand {
         }
 
         if config == "NA" {
-            return self.run_shell(cli, workspace, &docker);
+            return self.run_shell(cli, workspace, &docker, &ttype);
         }
 
         if !workspace.valid_config(config.as_str()) {
@@ -122,10 +147,10 @@ impl YCommand for ShellCommand {
         workspace.expand_ctx()?;
 
         if cmd.is_empty() {
-            return self.run_aosp_shell(cli, workspace, &self.setup_env(env), &docker);
+            return self.run_aosp_shell(cli, workspace, &self.setup_env(env), &docker, &ttype);
         }
 
-        self.run_cmd(&cmd, cli, workspace, &self.setup_env(env), &docker)
+        self.run_cmd(&cmd, cli, workspace, &self.setup_env(env), &docker, &ttype)
     }
 }
 
@@ -280,11 +305,12 @@ impl ShellCommand {
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
         docker: &String,
+        ttype: &TType
     ) -> Result<(), BError> {
         let cmd_line: Vec<String> = vec![String::from("/bin/bash"), String::from("-i")];
 
         let mut env: HashMap<String, String> =
-            self.aosp_build_env(cli, workspace, args_env_variables, &TType::AOSP)?;
+            self.aosp_build_env(cli, workspace, args_env_variables, ttype)?;
         /*
          * Set the YAAB_CURRENT_BUILD_CONFIG and YAAB_WORKSPACE env variable used by the aliases in
          * /etc/yaab/yaab.bashrc which is sourced by /etc/bash.bashrc when running an interactive
@@ -322,6 +348,7 @@ impl ShellCommand {
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
         docker: &String,
+        ttype: &TType,
     ) -> Result<(), BError> {
         let cmd_line: Vec<String> = vec![
             String::from("/bin/bash"),
@@ -334,7 +361,7 @@ impl ShellCommand {
          * The command don't have to be a AOSP command but we will setup the android env anyway
          */
         let env: HashMap<String, String> =
-            self.aosp_build_env(cli, workspace, args_env_variables, &TType::AOSP)?;
+            self.aosp_build_env(cli, workspace, args_env_variables, ttype)?;
         cli.info(format!("Running command '{}'", cmd));
         if !docker.is_empty() {
             let image: DockerImage = DockerImage::new(&docker)?;
@@ -350,6 +377,7 @@ impl ShellCommand {
         cli: &Cli,
         workspace: &Workspace,
         docker: &String,
+        ttype: &TType
     ) -> Result<(), BError> {
         let cmd_line: Vec<String> = vec![String::from("/bin/bash"), String::from("-i")];
 
