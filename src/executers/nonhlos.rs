@@ -95,7 +95,8 @@ impl<'a> TaskExecuter for NonHLOSBuildExecuter<'a> {
             let docker: Docker = Docker::new(image, interactive);
             docker.run_cmd(&mut cmd_line, env_variables, exec_dir, &self.cli)?;
         } else {
-            self.cli.check_call(&cmd_line, env_variables, true)?;
+            let mut env: HashMap<String, String> = env_variables.clone().into_iter().chain(self.cli.env().into_iter()).collect();
+            self.cli.check_call(&cmd_line, &env, true)?;
         }
         Ok(())
     }
@@ -107,7 +108,6 @@ impl<'a> NonHLOSBuildExecuter<'a> {
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
@@ -116,11 +116,11 @@ mod tests {
 
     use crate::cli::*;
     use crate::data::{WsBuildData, WsTaskData};
-    use crate::executers::{NonBBBuildExecuter, NonBBCleanExecuter, TaskExecuter};
+    use crate::executers::{NonHLOSBuildExecuter, NonHLOSCleanExecuter, TaskExecuter};
     use crate::helper::Helper;
 
     #[test]
-    fn test_nonbitbake_executer() {
+    fn test_nonhlos_executer() {
         let temp_dir: TempDir =
             TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
@@ -137,7 +137,7 @@ mod tests {
         {
             "index": "1",
             "name": "task-name",
-            "type": "non-bitbake",
+            "type": "non-hlos",
             "builddir": "test-dir",
             "build": "test.sh",
             "clean": "rm -rf test-dir"
@@ -163,20 +163,21 @@ mod tests {
             }))
             .once()
             .returning(|_x| Ok(()));
+        mocked_system.expect_env().returning(|| HashMap::new());
         let cli: Cli = Cli::new(
             Box::new(BLogger::new()),
             Box::new(mocked_system),
             clap::Command::new("yaab"),
             Some(vec!["yaab"]),
         );
-        let executer: NonBBBuildExecuter = NonBBBuildExecuter::new(&cli, &task_data);
+        let executer: NonHLOSBuildExecuter = NonHLOSBuildExecuter::new(&cli, &task_data);
         executer
             .exec(&env_variables, false, true)
             .expect("Failed to execute task");
     }
 
     #[test]
-    fn test_nonbitbake_executer_dry_run() {
+    fn test_nonhlos_executer_dry_run() {
         let temp_dir: TempDir =
             TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
@@ -192,7 +193,7 @@ mod tests {
         {
             "index": "1",
             "name": "task-name",
-            "type": "non-bitbake",
+            "type": "non-hlos",
             "builddir": "test-dir",
             "build": "test.sh",
             "clean": "rm -rf test-dir"
@@ -214,7 +215,7 @@ mod tests {
             clap::Command::new("yaab"),
             Some(vec!["yaab"]),
         );
-        let executer: NonBBBuildExecuter = NonBBBuildExecuter::new(&cli, &task_data);
+        let executer: NonHLOSBuildExecuter = NonHLOSBuildExecuter::new(&cli, &task_data);
         executer
             .exec(&env_variables, true, true)
             .expect("Failed to execute task");
@@ -271,7 +272,7 @@ mod tests {
     */
 
     #[test]
-    fn test_nonbitbake_clean_executer() {
+    fn test_nonhlos_clean_executer() {
         let temp_dir: TempDir =
             TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
@@ -288,7 +289,7 @@ mod tests {
         {
             "index": "1",
             "name": "task-name",
-            "type": "non-bitbake",
+            "type": "non-hlos",
             "builddir": "test-dir",
             "build": "test.sh",
             "clean": "rm -rf dir-to-delete"
@@ -322,10 +323,9 @@ mod tests {
             clap::Command::new("yaab"),
             Some(vec!["yaab"]),
         );
-        let executer: NonBBCleanExecuter = NonBBCleanExecuter::new(&cli, &task_data);
+        let executer: NonHLOSCleanExecuter = NonHLOSCleanExecuter::new(&cli, &task_data);
         executer
             .exec(&env_variables, false, true)
             .expect("Failed to execute task");
     }
 }
-*/
