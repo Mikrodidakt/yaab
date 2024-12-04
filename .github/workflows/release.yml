@@ -75,7 +75,7 @@ jobs:
     - name: Build musl x86_64 
       run: make build-release VARIANT=musl
 
-    - name: Package glibc x86_64
+    - name: Package musl x86_64
       run: make deb-package VARIANT=musl
 
     - name: Create Release
