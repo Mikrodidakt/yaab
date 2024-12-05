@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::env::var;
 use std::path::PathBuf;
 
 use crate::cli::Cli;
@@ -6,6 +7,8 @@ use crate::commands::{BError, YBaseCommand, YCommand};
 use crate::data::TType;
 use crate::executers::{Docker, DockerImage};
 use crate::workspace::Workspace;
+
+use super::Variant;
 
 static YCOMMAND: &str = "shell";
 static YCOMMAND_ABOUT: &str =
@@ -47,33 +50,8 @@ impl YCommand for ShellCommand {
         let env: Vec<String> = self.get_arg_many(cli, "env", YCOMMAND)?;
         let cmd: String = self.get_arg_str(cli, "run", YCOMMAND)?;
         let docker_pull: bool = self.get_arg_flag(cli, "docker_pull", YCOMMAND)?;
-        let variant: String = self.get_arg_str(cli, "variant", YCOMMAND)?;
-        let env_type: String = self.get_arg_str(cli, "env_type", YCOMMAND)?;
-        let ttype: TType;
-    
-        match env_type.as_str() {
-            "non-hlos" => {
-                ttype = TType::NONHLOS;
-            }
-            "hlos" => {
-                ttype = TType::HLOS;
-            }
-            "aosp" => {
-                ttype = TType::AOSP;
-            }
-            "kernel" => {
-                ttype = TType::KERNEL;
-            }
-            "vendor" => {
-                ttype = TType::VENDOR;
-            }
-            "qssi" => {
-                ttype = TType::QSSI;
-            }
-            _ => {
-                return Err(BError::ParseTasksError(format!("Invalid type '{}'", env_type)));
-            }
-        }
+        let variant: Variant = self.get_arg_variant(cli, "variant", YCOMMAND)?;
+        let ttype: TType = self.get_arg_etype(cli, "env_type", YCOMMAND)?;
 
         /*
          * If docker is enabled in the workspace settings then yaab will be bootstraped into a docker container
@@ -105,14 +83,10 @@ impl YCommand for ShellCommand {
                     cmd_line.append(&mut vec![String::from("-d"), docker]);
                 }
 
-                if !variant.is_empty() {
-                    cmd_line.append(&mut vec![String::from("-a"), variant]);
-                }
+                cmd_line.append(&mut vec![String::from("-a"), variant.to_string()]);
 
-                if !env_type.is_empty() {
-                    cmd_line.append(&mut vec![String::from("-t"), env_type]);
-                }
-
+                cmd_line.append(&mut vec![String::from("-t"), self.get_arg_str(cli, "env_type", YCOMMAND)?]);
+                
                 if !volumes.is_empty() {
                     volumes.iter().for_each(|key_value| {
                         cmd_line.append(&mut vec![String::from("-v"), key_value.to_string()]);
@@ -147,7 +121,7 @@ impl YCommand for ShellCommand {
         workspace.expand_ctx()?;
 
         if cmd.is_empty() {
-            return self.run_aosp_shell(cli, workspace, &self.setup_env(env), &docker, &ttype);
+            return self.run_aosp_shell(cli, workspace, &self.setup_env(env), &docker, &ttype, &variant);
         }
 
         self.run_cmd(&cmd, cli, workspace, &self.setup_env(env), &docker, &ttype)
@@ -305,7 +279,8 @@ impl ShellCommand {
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
         docker: &String,
-        ttype: &TType
+        ttype: &TType,
+        variant: &Variant
     ) -> Result<(), BError> {
         let cmd_line: Vec<String> = vec![String::from("/bin/bash"), String::from("-i")];
 
@@ -326,9 +301,15 @@ impl ShellCommand {
                 .to_string_lossy()
                 .to_string(),
         );
+
         env.insert(
             String::from("YAAB_CURRENT_BUILD_CONFIG"),
             workspace.config().build_data().product().name().to_string(),
+        );
+
+        env.insert(
+            String::from("YAAB_CURRENT_VARIANT"),
+            variant.to_string(),
         );
 
         cli.info(String::from("Start shell setting up build env"));

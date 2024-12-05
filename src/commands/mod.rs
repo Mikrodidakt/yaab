@@ -11,12 +11,49 @@ pub mod upload;
 use indexmap::IndexMap;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::str::FromStr;
+use std::fmt;
+use std::error::Error;
 
 use crate::cli::Cli;
+use crate::data::TType;
 use crate::error::BError;
 use crate::executers::docker::Docker;
 use crate::executers::DockerImage;
 use crate::workspace::Workspace;
+
+#[derive(Clone, PartialEq, Debug)]
+pub enum Variant {
+    USER,
+    USERDEBUG,
+    ENG,
+}
+
+// Implement Display for to-string conversion (lowercase output)
+impl fmt::Display for Variant {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let variant_str = match self {
+            Variant::USER => "user",
+            Variant::USERDEBUG => "userdebug",
+            Variant::ENG => "eng",
+        };
+        write!(f, "{}", variant_str)
+    }
+}
+
+// Implement FromStr for from-string conversion (lowercase input)
+impl FromStr for Variant {
+    type Err = Box<dyn Error>;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "user" => Ok(Variant::USER),
+            "userdebug" => Ok(Variant::USERDEBUG),
+            "eng" => Ok(Variant::ENG),
+            _ => Err(format!("Invalid variant: {}", s).into()),
+        }
+    }
+}
 
 // Yaab SubCommand
 pub trait YCommand {
@@ -100,6 +137,55 @@ pub trait YCommand {
             if sub_matches.contains_id(id) {
                 if let Some(value) = sub_matches.get_one::<String>(id) {
                     return Ok(value.clone());
+                }
+            }
+        }
+        return Err(BError::CliError(format!("Failed to read arg {}", id)));
+    }
+
+    fn get_arg_variant(&self, cli: &Cli, id: &str, cmd: &str) -> Result<Variant, BError> {
+        if let Some(sub_matches) = cli.get_args().subcommand_matches(cmd) {
+            if sub_matches.contains_id(id) {
+                if let Some(value) = sub_matches.get_one::<String>(id) {
+                    match value.parse::<Variant>() {
+                        Ok(variant) => return Ok(variant.clone()),
+                        Err(_e) => return Err(BError::ParseTasksError(format!("Invalid variant '{}'", value))),
+                    }
+                }
+            }
+        }
+        return Err(BError::CliError(format!("Failed to read arg {}", id)));
+    }
+
+    fn get_arg_etype(&self, cli: &Cli, id: &str, cmd: &str) -> Result<TType, BError> {
+        if let Some(sub_matches) = cli.get_args().subcommand_matches(cmd) {
+            if sub_matches.contains_id(id) {
+                if let Some(value) = sub_matches.get_one::<String>(id) {
+                    let ttype: TType;
+                    match value.as_str() {
+                        "non-hlos" => {
+                            ttype = TType::NONHLOS;
+                        }
+                        "hlos" => {
+                            ttype = TType::HLOS;
+                        }
+                        "aosp" => {
+                            ttype = TType::AOSP;
+                        }
+                        "kernel" => {
+                            ttype = TType::KERNEL;
+                        }
+                        "vendor" => {
+                            ttype = TType::VENDOR;
+                        }
+                        "qssi" => {
+                            ttype = TType::QSSI;
+                        }
+                        _ => {
+                            return Err(BError::ParseTasksError(format!("Invalid type '{}'", value)));
+                        }
+                    }
+                    return Ok(ttype.clone());
                 }
             }
         }
