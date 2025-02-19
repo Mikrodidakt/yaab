@@ -89,27 +89,27 @@ impl YCommand for BuildCommand {
         */
 
         let env_variables: HashMap<String, String> = self.setup_env(env);
-        let mut args_context: IndexMap<String, String> = self.setup_context(ctx);
+        let args_context: IndexMap<String, String> = self.setup_context(ctx);
 
         let mut extra_ctx: IndexMap<String, String> = indexmap! {
-            "PLATFORM_VERSION".to_string() => version.clone(),
-            "BUILD_ID".to_string() => build_id.clone(),
-            "BUILD_SHA".to_string() => sha,
-            "RELEASE_BUILD".to_string() => "0".to_string(),
-            "BUILD_VARIANT".to_string() => variant.clone(),
-            "PLATFORM_RELEASE".to_string() => format!("{}-{}", version, build_id),
+            "YAAB_PLATFORM_VERSION".to_string() => version.clone(),
+            "YAAB_BUILD_ID".to_string() => build_id.clone(),
+            "YAAB_BUILD_SHA".to_string() => sha,
+            "YAAB_RELEASE_BUILD".to_string() => "0".to_string(),
+            "YAAB_BUILD_VARIANT".to_string() => variant.clone(),
+            "YAAB_PLATFORM_RELEASE".to_string() => format!("{}-{}", version, build_id),
         };
 
         if variant == "user" {
             /*
              * Build commands defined in the build config needs to
              * know if it is release build or not running by including
-             * the BUILD_VARIANT to the context we can expose this to
-             * the build commands. We are keeping RELEASE_BUILD for
+             * the YAAB_BUILD_VARIANT to the context we can expose this to
+             * the build commands. We are keeping YAAB_RELEASE_BUILD for
              * backwards compatibility but should be replaced with BUILD_VARIANT
              */
-            extra_ctx.insert("BUILD_VARIANT".to_string(), "user".to_string());
-            extra_ctx.insert("RELEASE_BUILD".to_string(), "1".to_string());
+            extra_ctx.insert("YAAB_BUILD_VARIANT".to_string(), "user".to_string());
+            extra_ctx.insert("YAAB_RELEASE_BUILD".to_string(), "1".to_string());
         }
 
         // We need to add the extra context variables to the list of bitbake variables
@@ -239,7 +239,7 @@ impl BuildCommand {
                 clap::Arg::new("dry_run")
                     .action(clap::ArgAction::SetTrue)
                     .long("dry-run")
-                    .help("Only generates local.conf. To manually start the build run source ./layers/poky/oe-init-env-build <build-dir> followed by any bitbake command."),
+                    .help("Only run the pre-step skipping the build."),
             )
             .arg(
                 clap::Arg::new("platform_version")
@@ -247,7 +247,7 @@ impl BuildCommand {
                     .long("platform-version")
                     .value_name("x.y.z")
                     .default_value("0.0.0")
-                    .help("Platform version number for the build. Will be available as context variable PLATFORM_VERSION"),
+                    .help("Platform version number for the build. Will be available as context variable YAAB_PLATFORM_VERSION"),
             )
             .arg(
                 clap::Arg::new("build_sha")
@@ -255,7 +255,7 @@ impl BuildCommand {
                     .long("build-sha")
                     .value_name("sha")
                     .default_value("dev")
-                    .help("Sha for the current build. Will be available as a context variable BUILD_SHA"),
+                    .help("Sha for the current build. Will be available as a context variable YAAB_BUILD_SHA"),
             )
             .arg(
                 clap::Arg::new("variant")
@@ -264,7 +264,7 @@ impl BuildCommand {
                     .value_name("variant")
                     .default_value("userdebug")
                     .value_parser(["user", "userdebug", "eng"])
-                    .help("Specify the variant of the build it can be one of user, userdebug, eng. Will be available as a context variable BUILD_VARIANT"),
+                    .help("Specify the variant of the build it can be one of user, userdebug, eng. Will be available as a context variable YAAB_BUILD_VARIANT"),
             )
             .arg(
                 clap::Arg::new("interactive")
@@ -281,7 +281,7 @@ impl BuildCommand {
                     .long("build-id")
                     .value_name("nbr")
                     .default_value("0")
-                    .help("Build id number can be used if x.y.z is not enough for some reason and will be part of PLATFORM_RELEASE x.y.z-w"),
+                    .help("Build id number can be used if x.y.z is not enough for some reason and will be part of YAAB_PLATFORM_RELEASE x.y.z-w"),
             )
             .arg(
                 clap::Arg::new("ctx")

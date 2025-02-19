@@ -1,6 +1,6 @@
 [package]
 name = "yaab"
-version = "0.0.10"
+version = "0.0.16"
 description = "Build engine for the Yocto/OE Projects"
 catagories = ["command-line-utilities", "development-tools::build-utils"]
 keywords = ["cli", "android", "aosp", "json", "build", "docker"]

@@ -15,11 +15,11 @@ RUN apt-get update && \
         gcc-multilib \
         build-essential \
         gcc-11 \
-	    gcc-11-base \
-	    chrpath \
+	gcc-11-base \
+	chrpath \
         socat \
         file \
-	    python-is-python3 \
+	python-is-python3 \
         python3-pip \
         xz-utils  \
         locales \
@@ -65,7 +65,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
 WORKDIR /yaab
-COPY artifacts/yaab-x86_64-glibc.deb yaab.deb
+COPY artifacts/yaab.deb yaab.deb
 RUN dpkg -i yaab.deb
 
 # Setting up a yaab specific bash env pulled in by /etc/bash.bashrc 

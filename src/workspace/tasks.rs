@@ -1,10 +1,9 @@
 use crate::cli::Cli;
 use crate::collector::{Collected, Collector, CollectorFactory};
 use crate::configs::Context;
-use crate::data::{TType, WsBuildData, WsTaskData};
+use crate::data::{WsBuildData, WsTaskData};
 use crate::error::BError;
-use crate::executers::{
-    HLOSBuildExecuter, HLOSCleanExecuter, NonHLOSBuildExecuter, NonHLOSCleanExecuter, TaskExecuter,
+use crate::executers::{BuildExecuter, CleanExecuter, TaskExecuter,
 };
 use crate::fs::ConfigFileReader;
 use crate::workspace::WsArtifactsHandler;
@@ -44,7 +43,6 @@ impl WsTaskHandler {
         interactive: bool,
         force: bool,
     ) -> Result<(), BError> {
-        let executer: Box<dyn TaskExecuter>;
 
         if !force && self.data.disabled() {
             cli.info(format!("Task '{}' disabled, skipping", self.data.name()));
@@ -59,15 +57,7 @@ impl WsTaskHandler {
             return Ok(());
         }
 
-        match self.data.ttype() {
-            TType::QSSI | TType::KERNEL | TType::VENDOR | TType::AOSP | TType::HLOS => {
-                executer = Box::new(HLOSBuildExecuter::new(cli, &self.data, bb_variables));
-            }
-            TType::NONHLOS => {
-                executer = Box::new(NonHLOSBuildExecuter::new(cli, &self.data));
-            }
-        }
-
+        let executer: Box<dyn TaskExecuter> = Box::new(BuildExecuter::new(cli, &self.data));
         executer.exec(env_variables, dry_run, interactive)?;
 
         if !dry_run {
@@ -80,11 +70,9 @@ impl WsTaskHandler {
     pub fn clean<'a>(
         &self,
         cli: &'a Cli,
-        build_data: &WsBuildData,
+        _build_data: &WsBuildData,
         env_variables: &HashMap<String, String>,
     ) -> Result<(), BError> {
-        let executer: Box<dyn TaskExecuter>;
-
         if self.data.disabled() {
             cli.info(format!(
                 "Task '{}' is disabled in build config, execution is skipped",
@@ -101,15 +89,8 @@ impl WsTaskHandler {
             return Ok(());
         }
 
-        match self.data.ttype() {
-            TType::QSSI | TType::KERNEL | TType::VENDOR | TType::AOSP | TType::HLOS => {
-                executer = Box::new(HLOSCleanExecuter::new(cli, &self.data));
-            }
-            TType::NONHLOS => {
-                executer = Box::new(NonHLOSCleanExecuter::new(cli, &self.data));
-            }
-        }
-
+        
+        let executer: Box<dyn TaskExecuter> = Box::new(CleanExecuter::new(cli, &self.data));
         executer.exec(env_variables, false, false)?;
 
         Ok(())

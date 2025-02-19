@@ -5,12 +5,12 @@ use crate::executers::{Docker, DockerImage, TaskExecuter};
 
 use std::collections::HashMap;
 
-pub struct NonHLOSCleanExecuter<'a> {
+pub struct CleanExecuter<'a> {
     task_data: &'a WsTaskData,
     cli: &'a Cli,
 }
 
-impl<'a> TaskExecuter for NonHLOSCleanExecuter<'a> {
+impl<'a> TaskExecuter for CleanExecuter<'a> {
     fn exec(
         &self,
         args_env_variables: &HashMap<String, String>,
@@ -53,18 +53,18 @@ impl<'a> TaskExecuter for NonHLOSCleanExecuter<'a> {
     }
 }
 
-impl<'a> NonHLOSCleanExecuter<'a> {
+impl<'a> CleanExecuter<'a> {
     pub fn new(cli: &'a Cli, task_data: &'a WsTaskData) -> Self {
-        NonHLOSCleanExecuter { cli, task_data }
+        CleanExecuter { cli, task_data }
     }
 }
 
-pub struct NonHLOSBuildExecuter<'a> {
+pub struct BuildExecuter<'a> {
     cli: &'a Cli,
     task_data: &'a WsTaskData,
 }
 
-impl<'a> TaskExecuter for NonHLOSBuildExecuter<'a> {
+impl<'a> TaskExecuter for BuildExecuter<'a> {
     fn exec(
         &self,
         env_variables: &HashMap<String, String>,
@@ -95,16 +95,16 @@ impl<'a> TaskExecuter for NonHLOSBuildExecuter<'a> {
             let docker: Docker = Docker::new(image, interactive);
             docker.run_cmd(&mut cmd_line, env_variables, exec_dir, &self.cli)?;
         } else {
-            let mut env: HashMap<String, String> = env_variables.clone().into_iter().chain(self.cli.env().into_iter()).collect();
+            let env: HashMap<String, String> = env_variables.clone().into_iter().chain(self.cli.env().into_iter()).collect();
             self.cli.check_call(&cmd_line, &env, true)?;
         }
         Ok(())
     }
 }
 
-impl<'a> NonHLOSBuildExecuter<'a> {
+impl<'a> BuildExecuter<'a> {
     pub fn new(cli: &'a Cli, task_data: &'a WsTaskData) -> Self {
-        NonHLOSBuildExecuter { cli, task_data }
+        BuildExecuter { cli, task_data }
     }
 }
 
@@ -116,11 +116,11 @@ mod tests {
 
     use crate::cli::*;
     use crate::data::{WsBuildData, WsTaskData};
-    use crate::executers::{NonHLOSBuildExecuter, NonHLOSCleanExecuter, TaskExecuter};
+    use crate::executers::{BuildExecuter, CleanExecuter, TaskExecuter};
     use crate::helper::Helper;
 
     #[test]
-    fn test_nonhlos_executer() {
+    fn test_yaab_executer() {
         let temp_dir: TempDir =
             TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
@@ -137,7 +137,6 @@ mod tests {
         {
             "index": "1",
             "name": "task-name",
-            "type": "non-hlos",
             "builddir": "test-dir",
             "build": "test.sh",
             "clean": "rm -rf test-dir"
@@ -170,14 +169,14 @@ mod tests {
             clap::Command::new("yaab"),
             Some(vec!["yaab"]),
         );
-        let executer: NonHLOSBuildExecuter = NonHLOSBuildExecuter::new(&cli, &task_data);
+        let executer: BuildExecuter = BuildExecuter::new(&cli, &task_data);
         executer
             .exec(&env_variables, false, true)
             .expect("Failed to execute task");
     }
 
     #[test]
-    fn test_nonhlos_executer_dry_run() {
+    fn test_yaab_executer_dry_run() {
         let temp_dir: TempDir =
             TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
@@ -193,7 +192,6 @@ mod tests {
         {
             "index": "1",
             "name": "task-name",
-            "type": "non-hlos",
             "builddir": "test-dir",
             "build": "test.sh",
             "clean": "rm -rf test-dir"
@@ -215,7 +213,7 @@ mod tests {
             clap::Command::new("yaab"),
             Some(vec!["yaab"]),
         );
-        let executer: NonHLOSBuildExecuter = NonHLOSBuildExecuter::new(&cli, &task_data);
+        let executer: BuildExecuter = BuildExecuter::new(&cli, &task_data);
         executer
             .exec(&env_variables, true, true)
             .expect("Failed to execute task");
@@ -272,7 +270,7 @@ mod tests {
     */
 
     #[test]
-    fn test_nonhlos_clean_executer() {
+    fn test_yaab_clean_executer() {
         let temp_dir: TempDir =
             TempDir::new("yaab-test-dir").expect("Failed to create temp directory");
         let work_dir: PathBuf = temp_dir.into_path();
@@ -289,7 +287,6 @@ mod tests {
         {
             "index": "1",
             "name": "task-name",
-            "type": "non-hlos",
             "builddir": "test-dir",
             "build": "test.sh",
             "clean": "rm -rf dir-to-delete"
@@ -323,7 +320,7 @@ mod tests {
             clap::Command::new("yaab"),
             Some(vec!["yaab"]),
         );
-        let executer: NonHLOSCleanExecuter = NonHLOSCleanExecuter::new(&cli, &task_data);
+        let executer: CleanExecuter = CleanExecuter::new(&cli, &task_data);
         executer
             .exec(&env_variables, false, true)
             .expect("Failed to execute task");

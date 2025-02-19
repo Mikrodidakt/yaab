@@ -171,7 +171,7 @@ mod tests {
                 "ARG3=arg3"
             ],
             "deploy": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
             }
         }
         "#;
@@ -239,7 +239,7 @@ mod tests {
                 "ARG3=arg3"
             ],
             "deploy": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
             }
         }
         "#;
@@ -313,7 +313,7 @@ mod tests {
                 "ARG3=arg3"
             ],
             "deploy": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[DEVICE] $#[ARG2] $#[ARG3]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[YAAB_DEVICE] $#[ARG2] $#[ARG3]"
             }
         }
         "#;
@@ -383,10 +383,10 @@ mod tests {
             "arch": "test-arch",
             "bb": {},
             "context": [
-                "DEVICE=192.168.253.90"
+                "YAAB_DEVICE=192.168.253.90"
             ],
             "deploy": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[DEVICE]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[YAAB_DEVICE]"
             }
         }
         "#;
@@ -447,10 +447,10 @@ mod tests {
             "arch": "test-arch",
             "bb": {},
             "context": [
-                "DEVICE=192.168.253.90"
+                "YAAB_DEVICE=192.168.253.90"
             ],
             "deploy": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[DEVICE]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[YAAB_DEVICE]"
             }
         }
         "#;
@@ -518,10 +518,10 @@ mod tests {
             "arch": "test-arch",
             "bb": {},
             "context": [
-                "IMAGE=ctx-test-image"
+                "YAAB_IMAGE=ctx-test-image"
             ],
             "deploy": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[IMAGE]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[YAAB_IMAGE]"
             }
         }
         "#;
@@ -582,10 +582,10 @@ mod tests {
             "arch": "test-arch",
             "bb": {},
             "context": [
-                "IMAGE=ctx-test-image"
+                "YAAB_IMAGE=ctx-test-image"
             ],
             "deploy": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[IMAGE]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[YAAB_IMAGE]"
             }
         }
         "#;

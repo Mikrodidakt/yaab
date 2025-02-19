@@ -11,32 +11,30 @@ pub struct WsContextData {
 }
 
 // Built in context variables
-pub const CTX_KEY_MACHINE: &str = "MACHINE";
-pub const CTX_KEY_ARCH: &str = "ARCH";
-pub const CTX_KEY_DISTRO: &str = "DISTRO";
-pub const CTX_KEY_BB_BUILD_DIR: &str = "BB_BUILD_DIR";
-pub const CTX_KEY_BB_DEPLOY_DIR: &str = "BB_DEPLOY_DIR";
-pub const CTX_KEY_ARTIFACTS_DIR: &str = "ARTIFACTS_DIR";
-pub const CTX_KEY_SCRIPTS_DIR: &str = "SCRIPTS_DIR";
-pub const CTX_KEY_BUILDS_DIR: &str = "BUILDS_DIR";
-pub const CTX_KEY_WORK_DIR: &str = "WORK_DIR";
-pub const CTX_KEY_PLATFORM_VERSION: &str = "PLATFORM_VERSION";
-pub const CTX_KEY_BUILD_ID: &str = "BUILD_ID";
-pub const CTX_KEY_PLATFORM_RELEASE: &str = "PLATFORM_RELEASE";
-pub const CTX_KEY_BUILD_SHA: &str = "BUILD_SHA";
-pub const CTX_KEY_BUILD_VARIANT: &str = "BUILD_VARIANT";
-pub const CTX_KEY_RELEASE_BUILD: &str = "RELEASE_BUILD";
-pub const CTX_KEY_ARCHIVER: &str = "ARCHIVER";
-pub const CTX_KEY_DEBUG_SYMBOLS: &str = "DEBUG_SYMBOLS";
-pub const CTX_KEY_DEVICE: &str = "DEVICE";
-pub const CTX_KEY_IMAGE: &str = "IMAGE";
-pub const CTX_KEY_DATE: &str = "DATE";
-pub const CTX_KEY_TIME: &str = "TIME";
+pub const CTX_KEY_ARCH: &str = "YAAB_ARCH";
+pub const CTX_KEY_ARTIFACTS_DIR: &str = "YAAB_ARTIFACTS_DIR";
+pub const CTX_KEY_SCRIPTS_DIR: &str = "YAAB_SCRIPTS_DIR";
+pub const CTX_KEY_BUILDS_DIR: &str = "YAAB_BUILDS_DIR";
+pub const CTX_KEY_WORKSPACE_DIR: &str = "YAAB_WORKSPACE_DIR";
+pub const CTX_KEY_PLATFORM_VERSION: &str = "YAAB_PLATFORM_VERSION";
+pub const CTX_KEY_BUILD_ID: &str = "YAAB_BUILD_ID";
+pub const CTX_KEY_PLATFORM_RELEASE: &str = "YAAB_PLATFORM_RELEASE";
+pub const CTX_KEY_BUILD_SHA: &str = "YAAB_BUILD_SHA";
+pub const CTX_KEY_BUILD_VARIANT: &str = "YAAB_BUILD_VARIANT";
+pub const CTX_KEY_RELEASE_BUILD: &str = "YAAB_RELEASE_BUILD";
+pub const CTX_KEY_ARCHIVER: &str = "YAAB_ARCHIVER";
+pub const CTX_KEY_DEBUG_SYMBOLS: &str = "YAAB_DEBUG_SYMBOLS";
+pub const CTX_KEY_DEVICE: &str = "YAAB_DEVICE";
+pub const CTX_KEY_IMAGE: &str = "YAAB_IMAGE";
+pub const CTX_KEY_DATE: &str = "YAAB_DATE";
+pub const CTX_KEY_TIME: &str = "YAAB_TIME";
 // By default all of these are the same unless they
-// are specificly defined in the build config
-pub const CTX_KEY_PRODUCT_NAME: &str = "PRODUCT_NAME";
-pub const CTX_KEY_PROJECT_NAME: &str = "PROJECT_NAME";
-pub const CTX_KEY_NAME: &str = "NAME";
+// are specificly defined in the build config.
+// The NAME and CONFIG_NAME is always the same.
+pub const CTX_KEY_PRODUCT_NAME: &str = "YAAB_PRODUCT_NAME";
+pub const CTX_KEY_PROJECT_NAME: &str = "YAAB_PROJECT_NAME";
+pub const CTX_KEY_CONFIG_NAME: &str = "YAAB_CONFIG_NAME";
+pub const CTX_KEY_NAME: &str = "YAAB_NAME";
 
 impl Config for WsContextData {}
 
@@ -57,15 +55,12 @@ impl WsContextData {
             | CTX_KEY_DATE
             | CTX_KEY_TIME
             | CTX_KEY_DEBUG_SYMBOLS => true,
-            CTX_KEY_MACHINE
-            | CTX_KEY_ARCH
-            | CTX_KEY_DISTRO
-            | CTX_KEY_BB_BUILD_DIR
-            | CTX_KEY_BB_DEPLOY_DIR
+            CTX_KEY_ARCH
             | CTX_KEY_PRODUCT_NAME
             | CTX_KEY_PROJECT_NAME
             | CTX_KEY_NAME
-            | CTX_KEY_WORK_DIR
+            | CTX_KEY_CONFIG_NAME
+            | CTX_KEY_WORKSPACE_DIR
             | CTX_KEY_BUILDS_DIR => false,
             _ => false,
         }
@@ -95,18 +90,15 @@ impl WsContextData {
          * this in more details
          */
         let ctx_default_variables: IndexMap<String, String> = indexmap! {
-            CTX_KEY_MACHINE.to_string() => "".to_string(),
             CTX_KEY_ARCH.to_string() => "".to_string(),
-            CTX_KEY_DISTRO.to_string() => "".to_string(),
             CTX_KEY_PRODUCT_NAME.to_string() => "".to_string(),
             CTX_KEY_PROJECT_NAME.to_string() => "".to_string(),
             CTX_KEY_NAME.to_string() => "".to_string(),
-            CTX_KEY_BB_BUILD_DIR.to_string() => "".to_string(),
-            CTX_KEY_BB_DEPLOY_DIR.to_string() => "".to_string(),
+            CTX_KEY_CONFIG_NAME.to_string() => "".to_string(),
             CTX_KEY_ARTIFACTS_DIR.to_string() => "".to_string(),
             CTX_KEY_SCRIPTS_DIR.to_string() => "".to_string(),
             CTX_KEY_BUILDS_DIR.to_string() => "".to_string(),
-            CTX_KEY_WORK_DIR.to_string() => "".to_string(),
+            CTX_KEY_WORKSPACE_DIR.to_string() => "".to_string(),
             CTX_KEY_PLATFORM_VERSION.to_string() => "0.0.0".to_string(),
             CTX_KEY_BUILD_ID.to_string() => "0".to_string(),
             CTX_KEY_PLATFORM_RELEASE.to_string() => "".to_string(),
@@ -167,12 +159,12 @@ mod tests {
     use std::path::PathBuf;
 
     use crate::data::context::{
-        CTX_KEY_ARCH, CTX_KEY_ARCHIVER, CTX_KEY_ARTIFACTS_DIR, CTX_KEY_BB_BUILD_DIR,
-        CTX_KEY_BB_DEPLOY_DIR, CTX_KEY_BUILDS_DIR, CTX_KEY_BUILD_ID, CTX_KEY_BUILD_SHA,
-        CTX_KEY_BUILD_VARIANT, CTX_KEY_DATE, CTX_KEY_DEBUG_SYMBOLS, CTX_KEY_DEVICE, CTX_KEY_DISTRO,
-        CTX_KEY_IMAGE, CTX_KEY_MACHINE, CTX_KEY_NAME, CTX_KEY_PLATFORM_RELEASE,
-        CTX_KEY_PLATFORM_VERSION, CTX_KEY_PRODUCT_NAME, CTX_KEY_PROJECT_NAME,
-        CTX_KEY_RELEASE_BUILD, CTX_KEY_SCRIPTS_DIR, CTX_KEY_TIME, CTX_KEY_WORK_DIR,
+        CTX_KEY_ARCH, CTX_KEY_ARCHIVER, CTX_KEY_ARTIFACTS_DIR,
+        CTX_KEY_BUILDS_DIR, CTX_KEY_BUILD_ID, CTX_KEY_BUILD_SHA,
+        CTX_KEY_BUILD_VARIANT, CTX_KEY_DATE, CTX_KEY_DEBUG_SYMBOLS, CTX_KEY_DEVICE,
+        CTX_KEY_IMAGE, CTX_KEY_NAME, CTX_KEY_PLATFORM_RELEASE,
+        CTX_KEY_PLATFORM_VERSION, CTX_KEY_PRODUCT_NAME, CTX_KEY_CONFIG_NAME, CTX_KEY_PROJECT_NAME,
+        CTX_KEY_RELEASE_BUILD, CTX_KEY_SCRIPTS_DIR, CTX_KEY_TIME, CTX_KEY_WORKSPACE_DIR,
     };
     use crate::data::WsContextData;
     use crate::workspace::WsSettingsHandler;
@@ -185,16 +177,13 @@ mod tests {
         }"#;
         let data: WsContextData = WsContextData::from_str(json_default_build_config)
             .expect("Failed to parse context data");
-        assert!(data.get_ctx_value(CTX_KEY_MACHINE).is_empty());
         assert!(data.get_ctx_value(CTX_KEY_ARCH).is_empty());
-        assert!(data.get_ctx_value(CTX_KEY_DISTRO).is_empty());
         assert!(data.get_ctx_value(CTX_KEY_PRODUCT_NAME).is_empty());
         assert!(data.get_ctx_value(CTX_KEY_PROJECT_NAME).is_empty());
         assert!(data.get_ctx_value(CTX_KEY_NAME).is_empty());
+        assert!(data.get_ctx_value(CTX_KEY_CONFIG_NAME).is_empty());
         assert!(data.get_ctx_value(CTX_KEY_DEVICE).is_empty());
         assert!(data.get_ctx_value(CTX_KEY_IMAGE).is_empty());
-        assert_eq!(data.get_ctx_path(CTX_KEY_BB_BUILD_DIR), PathBuf::from(""));
-        assert_eq!(data.get_ctx_path(CTX_KEY_BB_DEPLOY_DIR), PathBuf::from(""));
         assert_eq!(data.get_ctx_path(CTX_KEY_ARTIFACTS_DIR), PathBuf::from(""));
         assert_eq!(data.get_ctx_path(CTX_KEY_SCRIPTS_DIR), PathBuf::from(""));
         assert_eq!(data.get_ctx_path(CTX_KEY_BUILDS_DIR), PathBuf::from(""));
@@ -203,7 +192,7 @@ mod tests {
             String::from("0.0.0")
         );
         assert_eq!(data.get_ctx_value(CTX_KEY_BUILD_ID), String::from("0"));
-        assert_eq!(data.get_ctx_path(CTX_KEY_WORK_DIR), PathBuf::from(""));
+        assert_eq!(data.get_ctx_path(CTX_KEY_WORKSPACE_DIR), PathBuf::from(""));
         assert_eq!(
             data.get_ctx_value(CTX_KEY_BUILD_VARIANT),
             String::from("dev")
@@ -238,23 +227,21 @@ mod tests {
         let mut data: WsContextData =
             WsContextData::from_str(json_build_config).expect("Failed to parse context data");
         let ctx_built_in_variables: IndexMap<String, String> = indexmap! {
-            CTX_KEY_MACHINE.to_string() => "test-machine".to_string(),
             CTX_KEY_ARCH.to_string() => "test-arch".to_string(),
-            CTX_KEY_DISTRO.to_string() => "test-distro".to_string(),
             CTX_KEY_BUILD_VARIANT.to_string() => "test-variant".to_string(),
             CTX_KEY_PRODUCT_NAME.to_string() => "test".to_string(),
-            CTX_KEY_WORK_DIR.to_string() => settings.work_dir().to_string_lossy().to_string(),
+            CTX_KEY_CONFIG_NAME.to_string() => "test".to_string(),
+            CTX_KEY_WORKSPACE_DIR.to_string() => settings.work_dir().to_string_lossy().to_string(),
         };
         data.update(&ctx_built_in_variables);
-        assert_eq!(data.get_ctx_value(CTX_KEY_MACHINE), "test-machine");
         assert_eq!(data.get_ctx_value(CTX_KEY_ARCH), "test-arch");
-        assert_eq!(data.get_ctx_value(CTX_KEY_DISTRO), "test-distro");
         assert_eq!(data.get_ctx_value(CTX_KEY_BUILD_VARIANT), "test-variant");
         assert_eq!(data.get_ctx_value(CTX_KEY_PRODUCT_NAME), "test");
+        assert_eq!(data.get_ctx_value(CTX_KEY_CONFIG_NAME), "test");
         assert_eq!(data.get_ctx_value("KEY1"), "value1");
         assert_eq!(data.get_ctx_value("KEY2"), "value2");
         assert_eq!(data.get_ctx_value("KEY3"), "value3");
-        assert_eq!(data.get_ctx_path(CTX_KEY_WORK_DIR), settings.work_dir());
+        assert_eq!(data.get_ctx_path(CTX_KEY_WORKSPACE_DIR), settings.work_dir());
     }
 
     #[test]
@@ -263,8 +250,8 @@ mod tests {
         {
             "version": "5",
             "context": [
-                "IMAGE=image",
-                "DEVICE=device"
+                "YAAB_IMAGE=image",
+                "YAAB_DEVICE=device"
             ]
         }"#;
         let data: WsContextData =

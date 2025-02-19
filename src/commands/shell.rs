@@ -51,7 +51,6 @@ impl YCommand for ShellCommand {
         let cmd: String = self.get_arg_str(cli, "run", YCOMMAND)?;
         let docker_pull: bool = self.get_arg_flag(cli, "docker_pull", YCOMMAND)?;
         let variant: Variant = self.get_arg_variant(cli, "variant", YCOMMAND)?;
-        let ttype: TType = self.get_arg_etype(cli, "env_type", YCOMMAND)?;
 
         /*
          * If docker is enabled in the workspace settings then yaab will be bootstraped into a docker container
@@ -84,8 +83,6 @@ impl YCommand for ShellCommand {
                 }
 
                 cmd_line.append(&mut vec![String::from("-a"), variant.to_string()]);
-
-                cmd_line.append(&mut vec![String::from("-t"), self.get_arg_str(cli, "env_type", YCOMMAND)?]);
                 
                 if !volumes.is_empty() {
                     volumes.iter().for_each(|key_value| {
@@ -108,7 +105,7 @@ impl YCommand for ShellCommand {
         }
 
         if config == "NA" {
-            return self.run_shell(cli, workspace, &docker, &ttype);
+            return self.run_shell(cli, workspace, &docker);
         }
 
         if !workspace.valid_config(config.as_str()) {
@@ -121,10 +118,10 @@ impl YCommand for ShellCommand {
         workspace.expand_ctx()?;
 
         if cmd.is_empty() {
-            return self.run_aosp_shell(cli, workspace, &self.setup_env(env), &docker, &ttype, &variant);
+            return self.run_yaab_shell(cli, workspace, &self.setup_env(env), &docker, &variant);
         }
 
-        self.run_cmd(&cmd, cli, workspace, &self.setup_env(env), &docker, &ttype)
+        self.run_cmd(&cmd, cli, workspace, &self.setup_env(env), &docker, &variant)
     }
 }
 
@@ -161,16 +158,7 @@ impl ShellCommand {
                 .value_name("variant")
                 .default_value("userdebug")
                 .value_parser(["user", "userdebug", "eng"])
-                .help("Specify the variant of the build it can be one of user, userdebug, eng. Will be available as a context variable BUILD_VARIANT."),
-        )
-        .arg(
-            clap::Arg::new("env_type")
-                .short('t')
-                .long("env-type")
-                .value_name("env_type")
-                .default_value("aosp")
-                .value_parser(["aosp", "vendor", "qssi", "kernel"])
-                .help("Specify the build environemt type it can be one of aosp, kernel, vendor, qssi. This will define what build env that should be sourced into the shell. Will be available as a context variable ENV_TYPE."),
+                .help("Specify the variant of the build it can be one of user, userdebug, eng. Will be available as a context variable YAAB_BUILD_VARIANT."),
         )
         .arg(
             clap::Arg::new("env")
@@ -225,45 +213,45 @@ impl ShellCommand {
         variables
     }
 
-    fn aosp_build_env(
+    fn yaab_build_env(
         &self,
         cli: &Cli,
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
-        ttype: &TType,
+        variant: &Variant,
     ) -> Result<HashMap<String, String>, BError> {
-        let result: Result<PathBuf, BError> = workspace.config().init_env(ttype);
-        let init_env_file: PathBuf;
-        let mut env: HashMap<String, String>;
-        match result {
-            Ok(init_env) => {
-                init_env_file = init_env;
-            }
-            Err(e) => {
-                init_env_file = PathBuf::from("");
-            }
-        }
+        /* We need to pull in the parent env */
+        let mut env: HashMap<String, String> = cli.env();
+        /*
+         * Set the YAAB_BUILD_CONFIG and YAAB_WORKSPACE env variable used by the aliases in
+         * /etc/yaab/yaab.bashrc which is sourced by /etc/bash.bashrc when running an interactive
+         * bash shell. This will make it possible to run build, clean, deploy, upload aliases from any location
+         * in the shell without having to specify the build config or change directory since it is selected
+         * when starting the shell
+         */
+        env.insert(
+            String::from("YAAB_WORKSPACE_DIR"),
+            workspace
+                .settings()
+                .work_dir()
+                .to_string_lossy()
+                .to_string(),
+        );
 
-        if init_env_file.as_os_str().is_empty() {
-            cli.info(String::from(
-                "no init env file specified skipping sourcing env!",
-            ));
-            /* We still need to pull in the parent env */
-            env = cli.env();
-        } else {
-            /*
-             * Env variables priority are
-             * 1. Cli env variables
-             * 2. System env variables
-             */
+        env.insert(
+            String::from("YAAB_BUILD_CONFIG"),
+            workspace.config().build_data().product().name().to_string(),
+        );
 
-            /* Sourcing the init env file and returning all the env variables available including from the shell */
-            cli.info(format!(
-                "source init env file '{}'",
-                init_env_file.display()
-            ));
-            env = cli.source_init_env(&init_env_file, &workspace.settings().work_dir())?;
-        }
+        env.insert(
+            String::from("YAAB_BUILD_VARIANT"),
+            variant.to_string(),
+        );
+
+        env.insert(
+            String::from("YAAB_PRODUCT_NAME"),
+            workspace.config().build_data().product().product().to_string(),
+        );
 
         /* Process the env variables from the cli */
         args_env_variables.iter().for_each(|(key, value)| {
@@ -273,44 +261,18 @@ impl ShellCommand {
         Ok(env)
     }
 
-    pub fn run_aosp_shell(
+    pub fn run_yaab_shell(
         &self,
         cli: &Cli,
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
         docker: &String,
-        ttype: &TType,
         variant: &Variant
     ) -> Result<(), BError> {
         let cmd_line: Vec<String> = vec![String::from("/bin/bash"), String::from("-i")];
 
-        let mut env: HashMap<String, String> =
-            self.aosp_build_env(cli, workspace, args_env_variables, ttype)?;
-        /*
-         * Set the YAAB_CURRENT_BUILD_CONFIG and YAAB_WORKSPACE env variable used by the aliases in
-         * /etc/yaab/yaab.bashrc which is sourced by /etc/bash.bashrc when running an interactive
-         * bash shell. This will make it possible to run build, clean, deploy, upload aliases from any location
-         * in the shell without having to specify the build config or change directory since it is selected
-         * when starting the shell
-         */
-        env.insert(
-            String::from("YAAB_WORKSPACE"),
-            workspace
-                .settings()
-                .work_dir()
-                .to_string_lossy()
-                .to_string(),
-        );
-
-        env.insert(
-            String::from("YAAB_CURRENT_BUILD_CONFIG"),
-            workspace.config().build_data().product().name().to_string(),
-        );
-
-        env.insert(
-            String::from("YAAB_CURRENT_VARIANT"),
-            variant.to_string(),
-        );
+        let env: HashMap<String, String> =
+            self.yaab_build_env(cli, workspace, args_env_variables, variant)?;
 
         cli.info(String::from("Start shell setting up build env"));
         if !docker.is_empty() {
@@ -329,7 +291,7 @@ impl ShellCommand {
         workspace: &Workspace,
         args_env_variables: &HashMap<String, String>,
         docker: &String,
-        ttype: &TType,
+        variant: &Variant,
     ) -> Result<(), BError> {
         let cmd_line: Vec<String> = vec![
             String::from("/bin/bash"),
@@ -342,7 +304,7 @@ impl ShellCommand {
          * The command don't have to be a AOSP command but we will setup the android env anyway
          */
         let env: HashMap<String, String> =
-            self.aosp_build_env(cli, workspace, args_env_variables, ttype)?;
+            self.yaab_build_env(cli, workspace, args_env_variables, variant)?;
         cli.info(format!("Running command '{}'", cmd));
         if !docker.is_empty() {
             let image: DockerImage = DockerImage::new(&docker)?;
@@ -358,7 +320,6 @@ impl ShellCommand {
         cli: &Cli,
         workspace: &Workspace,
         docker: &String,
-        ttype: &TType
     ) -> Result<(), BError> {
         let cmd_line: Vec<String> = vec![String::from("/bin/bash"), String::from("-i")];
 

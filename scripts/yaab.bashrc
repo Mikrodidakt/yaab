@@ -59,7 +59,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@yaab-v${YAAB_VERSION}[${YAAB_CURRENT_BUILD_CONFIG}]\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='\[\033[01;32m\]yaab-v${YAAB_VERSION}@${YAAB_PRODUCT}-${YAAB_BUILD_VARIANT}[${YAAB_BUILD_CONFIG}]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -119,30 +119,34 @@ if ! shopt -oq posix; then
 fi
 
 PATH=${YAAB_BIN_DIR}:${PATH}
-# The YAAB_CURRENT_BUILD_CONFIG will be set by
+# The YAAB_BUILD_CONFIG will be set by
 # yaab when initializing a workspace shell
 build() {
-    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" build -c "${YAAB_CURRENT_BUILD_CONFIG}" "$@")
+    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" build -c "${YAAB_BUILD_CONFIG}" "$@")
 }
 
 clean() {
-    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" clean -c "${YAAB_CURRENT_BUILD_CONFIG}" "$@")
+    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" clean -c "${YAAB_BUILD_CONFIG}" "$@")
 }
 
 deploy() {
-    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" deploy -c "${YAAB_CURRENT_BUILD_CONFIG}" "$@")
+    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" deploy -c "${YAAB_BUILD_CONFIG}" "$@")
 }
 
 upload() {
-    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" upload -c "${YAAB_CURRENT_BUILD_CONFIG}" "$@")
+    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" upload -c "${YAAB_BUILD_CONFIG}" "$@")
 }
 
 setup() {
-    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" setup -c "${YAAB_CURRENT_BUILD_CONFIG}" "$@")
+    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" setup -c "${YAAB_BUILD_CONFIG}" "$@")
 }
 
 sync() {
-    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" sync -c "${YAAB_CURRENT_BUILD_CONFIG}" "$@")
+    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" sync -c "${YAAB_BUILD_CONFIG}" "$@")
+}
+
+yenv() {
+    env | grep YAAB
 }
 
 help() {
@@ -150,7 +154,7 @@ help() {
 }
 
 list() {
-    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" list -c "${YAAB_CURRENT_BUILD_CONFIG}" "$@")
+    (cd "${YAAB_WORKSPACE}"; "${YAAB_BIN_DIR}/yaab" list -c "${YAAB_BUILD_CONFIG}" "$@")
 }
 
 shell() {

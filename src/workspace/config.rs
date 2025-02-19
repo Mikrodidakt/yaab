@@ -76,26 +76,6 @@ impl WsBuildConfigHandler {
         }
     }
 
-    pub fn init_env(&self, ttype: &TType) -> Result<PathBuf, BError> {
-        /*
-         * If the task type is AOSP we assume the default initenv should
-         * be used. AOSP type is the default so unless specified this will
-         * be used. The QSSI, VENDOR, KERNEL and HLOS is mostly for QC
-         * projects.
-         */
-        if ttype == &TType::AOSP {
-            return Ok(self.data.init_env_file());
-        }
-
-        for (_name, task) in self.tasks.iter() {
-            if task.data().ttype() == ttype {
-                return Ok(task.data().init_env().clone());
-            }
-        }
-
-        return Err(BError::ValueError(format!("No '{:?}' task defined", ttype)));
-    }
-
     pub fn sub_cmd(&self, cmd: &str) -> Result<&WsCustomSubCmdHandler, BError> {
         match self.subcmds.get(cmd) {
             Some(config) => {
@@ -221,6 +201,7 @@ mod tests {
         assert!(ws_config.tasks().is_empty());
     }
 
+    /*
     #[test]
     fn test_ws_config_invalid_init_env_task_type() {
         let json_settings = r#"
@@ -249,7 +230,7 @@ mod tests {
             WsBuildConfigHandler::from_str(json_build_config, &mut ws_settings)
                 .expect("Failed to parse build config");
         {
-            let result: Result<PathBuf, BError> = ws_config.init_env(&TType::QSSI);
+            let result: Result<PathBuf, BError> = ws_config.task("task1");
             match result {
                 Ok(_task) => {
                     panic!("We should have recived an error because we have no qssi task defined!");
@@ -390,7 +371,7 @@ mod tests {
                 PathBuf::from("/workspace/vendor/builddir/build/setupenv.sh")
             );
         }
-    }
+    }*/
 
     #[test]
     fn test_ws_task_config_condition() {

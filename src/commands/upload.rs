@@ -165,7 +165,7 @@ mod tests {
                 "ARG3=arg3"
             ],
             "upload": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
             }
         }
         "#;
@@ -233,7 +233,7 @@ mod tests {
                 "ARG3=arg3"
             ],
             "upload": {
-                "cmd": "$#[SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
+                "cmd": "$#[YAAB_SCRIPTS_DIR]/script.sh $#[ARG1] $#[ARG2] $#[ARG3]"
             }
         }
         "#;

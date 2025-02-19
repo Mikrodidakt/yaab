@@ -67,22 +67,12 @@ impl WsBuildData {
             context::CTX_KEY_ARTIFACTS_DIR.to_string() => settings.artifacts_dir().to_string_lossy().to_string(),
             context::CTX_KEY_SCRIPTS_DIR.to_string() => settings.scripts_dir().to_string_lossy().to_string(),
             context::CTX_KEY_BUILDS_DIR.to_string() => settings.builds_dir().to_string_lossy().to_string(),
-            context::CTX_KEY_WORK_DIR.to_string() => settings.work_dir().to_string_lossy().to_string(),
+            context::CTX_KEY_WORKSPACE_DIR.to_string() => settings.work_dir().to_string_lossy().to_string(),
             context::CTX_KEY_DATE.to_string() => chrono::offset::Local::now().format("%Y-%m-%d").to_string(),
             context::CTX_KEY_TIME.to_string() => chrono::offset::Local::now().format("%H:%M").to_string(),
         };
 
         context.update(&ctx_built_in_variables);
-        // Update the "built-in" bitbake paths in the context variables
-        /*let bb_build_dir: PathBuf = settings
-            .builds_dir()
-            .clone()
-            .join(PathBuf::from(product.name().to_string()));
-        let ctx_bitbake_variables: IndexMap<String, String> = indexmap! {
-            context::CTX_KEY_BB_BUILD_DIR.to_string() => bb_build_dir.to_string_lossy().to_string(),
-        };
-        context.update(&ctx_bitbake_variables);
-        */
 
         Ok(WsBuildData {
             data: data.to_owned(),
@@ -211,8 +201,6 @@ impl WsBuildData {
 
     pub fn expand_ctx(&mut self) -> Result<(), BError> {
         self.config.expand_ctx(self.context.ctx())?;
-        //self.product.expand_ctx(self.context.ctx());
-        //self.bitbake.expand_ctx(self.context.ctx())?;
         Ok(())
     }
 
@@ -483,8 +471,8 @@ mod tests {
             "type": "manifest",
             "name": "test-manifest",
             "content": {
-                "date": "$#[DATE]",
-                "time": "$#[TIME]"
+                "date": "$#[YAAB_DATE]",
+                "time": "$#[YAAB_TIME]"
             }
         }"#;
         let work_dir: PathBuf = PathBuf::from("/workspace");
